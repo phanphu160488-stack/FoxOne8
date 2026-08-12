@@ -1,0 +1,42 @@
+<script>
+/* ==== FOX ONE - ANTI DEVTOOLS / ANTI F12 ==== */
+(function(){
+  var _blocked=false;
+  function _doBlock(){
+    if(_blocked)return; _blocked=true;
+    try{
+      document.title='Truy cập bị chặn';
+      var b=document.body;
+      if(b){b.innerHTML='';b.style.cssText='margin:0;padding:0;background:#0f172a;';}
+      else{document.documentElement.innerHTML='';}
+      var d=document.createElement('div');
+      d.style.cssText='position:fixed;top:0;left:0;width:100%;height:100%;z-index:2147483647;background:#0f172a;color:#fff;display:flex;flex-direction:column;align-items:center;justify-content:center;font-family:Arial,sans-serif;text-align:center;padding:24px;box-sizing:border-box;';
+      d.innerHTML='<div style="font-size:54px;margin-bottom:14px;">&#128683;</div>'
+        +'<div style="font-size:20px;font-weight:800;margin-bottom:10px;letter-spacing:1px;">PH&Aacute;T HI&#7878;N C&Ocirc;NG C&#7908; DEVTOOLS</div>'
+        +'<div style="font-size:14px;opacity:.8;max-width:380px;line-height:1.6;">Vui l&ograve;ng &dstrok;&oacute;ng DevTools (F12) v&agrave; t&#7843;i l&#7841;i trang &dstrok;&#7875; ti&#7871;p t&#7909;c s&#7917; d&#7909;ng.</div>';
+      (document.body||document.documentElement).appendChild(d);
+    }catch(e){}
+    setTimeout(function(){try{window.location.replace('/');}catch(e){}},2500);
+  }
+  function _detectSize(){
+    try{
+      if(window.outerWidth-window.innerWidth>160||window.outerHeight-window.innerHeight>160)_doBlock();
+    }catch(e){}
+  }
+  function _dbgTrap(){
+    var t=Date.now();
+    try{(function(){debugger;})();}catch(e){}
+    if(Date.now()-t>100)_doBlock();
+  }
+  document.addEventListener('keydown',function(e){
+    var k=e.keyCode||e.which, c=e.ctrlKey||e.metaKey, s=e.shiftKey;
+    if(k===123||(c&&s&&(k===73||k===74||k===67||k===75))||(c&&k===85)||(c&&k===83)||(c&&k===80)){
+      e.preventDefault();e.stopPropagation();_doBlock();return false;
+    }
+  },true);
+  document.addEventListener('contextmenu',function(e){e.preventDefault();e.stopPropagation();return false;},true);
+  window.setInterval(_detectSize,400);
+  window.setInterval(_dbgTrap,400);
+  try{['log','warn','error','info','debug','table','dir'].forEach(function(m){try{console[m]=function(){};}catch(e){}});}catch(e){}
+})();
+</script>

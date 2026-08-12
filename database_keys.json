@@ -1,0 +1,38 @@
+{
+  "___ADMIN_CONFIG___": {
+    "user": "phedevdzz",
+    "pass": "x$f%^R4tGF4&nTyD5LW8Avlf"
+  },
+  "___OWNER_IPS___": [
+    "127.0.0.1"
+  ],
+  "KEY-S5IY-T5BR-94IO": {
+    "duration_val": 1,
+    "duration_unit": "ngày",
+    "max_devices": 1,
+    "status": "Chưa kích hoạt",
+    "activated_time": null,
+    "created_at": 1783129458.1932957,
+    "used_devices": {},
+    "creator_info": "Admin Panel | premium"
+  },
+  "1DAY-HRJ-XDZ": {
+    "duration_val": 1,
+    "duration_unit": "ngày",
+    "max_devices": 1,
+    "status": "Chưa kích hoạt",
+    "activated_time": null,
+    "created_at": 1783129458.240657,
+    "used_devices": {}
+  },
+  "KEY-R24K-S4GU-TNTX": {
+    "duration_val": 1,
+    "duration_unit": "ngày",
+    "max_devices": 1,
+    "status": "Chưa kích hoạt",
+    "activated_time": null,
+    "created_at": 1783129910.1445637,
+    "used_devices": {},
+    "creator_info": "Admin Panel | premium"
+  }
+}

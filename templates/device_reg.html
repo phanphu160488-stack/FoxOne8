@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>Đăng Ký Thiết Bị — Fox One</title>
+<link rel="icon" href="/img.png">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+<link rel="stylesheet" href="/static/css/device_reg.css">
+{% include 'partials/anti_devtools.html' %}
+</head>
+<body>
+<div class="wrap">
+  <div class="logo-row">
+    <div class="logo-ico"><i class="fa-solid fa-mobile-screen-button"></i></div>
+    <div class="logo-text">FOX ONE</div>
+  </div>
+  <div class="card">
+    <div class="card-icon"><i class="fa-solid fa-mobile-screen-button"></i></div>
+    <div class="card-title">ĐĂNG KÝ THIẾT BỊ</div>
+    <div class="card-sub">Nhập thông tin thiết bị và key để gửi yêu cầu đăng ký. Admin sẽ xét duyệt trong thời gian sớm nhất.</div>
+    <div class="info-box"><i class="fa-solid fa-circle-info"></i><span>Thiết bị sẽ được kích hoạt sau khi admin duyệt. Vui lòng đảm bảo Device ID chính xác.</span></div>
+    <div class="fg"><label>Key của bạn</label><input type="text" id="dr_key" placeholder="XXXX-XXXX-XXXX-XXXX"></div>
+    <div class="fg"><label>Device ID</label><input type="text" id="dr_dev" placeholder="Ví dụ: android_abc123 hoặc ios_xyz456"></div>
+    <div class="fg"><label>Tên thiết bị (tuỳ chọn)</label><input type="text" id="dr_name" placeholder="Samsung Galaxy A52, iPhone 14..."></div>
+    <button class="btn-reg" id="regBtn" onclick="doRegister()"><i class="fa-solid fa-paper-plane"></i> GỬI YÊU CẦU</button>
+    <div class="result" id="drResult"></div>
+  </div>
+  <a href="/" class="back-btn"><i class="fa-solid fa-arrow-left"></i> Về trang chủ</a>
+</div>
+<script src="/static/js/device_reg.js"></script>
+</body>
+</html>

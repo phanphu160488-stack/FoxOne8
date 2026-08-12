@@ -1,0 +1,1535 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>Server Key Premium — Fox One</title>
+<link rel="icon" href="/img.png">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+<link rel="stylesheet" href="/static/css/style.css">
+{% include 'partials/anti_devtools.html' %}
+</head>
+
+<body>
+
+<!-- ANNOUNCEMENT BANNER -->
+<div id="announceOverlay">
+  <div id="announceBox">
+    <div class="ann-header">
+      <div class="ann-header-icon"><i class="fa-solid fa-bullhorn"></i></div>
+      <div>
+        <div class="ann-header-title">📢 Thông Báo</div>
+        <div class="ann-header-sub">Từ Admin — Vui lòng đọc trước khi sử dụng</div>
+      </div>
+    </div>
+    <div class="ann-body" id="annContent">Đang tải thông báo...</div>
+    <div class="ann-footer">
+      <button class="ann-btn-hide" onclick="hideAnnounce2h()"><i class="fa-solid fa-clock"></i> Ẩn 2 giờ</button>
+      <button class="ann-btn-close" onclick="closeAnnounce()"><i class="fa-solid fa-xmark"></i> Đóng</button>
+    </div>
+  </div>
+</div>
+
+
+<!-- TOAST NOTIFICATION -->
+<div id="toast-overlay">
+  <div id="toast-box" class="toast-box toast-box-success">
+    <div id="toast-square" class="toast-square">
+      <i id="toast-i" class="fa-solid fa-check"></i>
+    </div>
+    <div id="toast-label" class="toast-label">Thành công</div>
+  </div>
+</div>
+
+<!-- STARTUP LOADING -->
+<div id="startupLoading">
+  <div class="startup-logo"><i class="fa-solid fa-key"></i></div>
+  <div class="startup-title">ĐANG KẾT NỐI...</div>
+  <div class="progress-wrap">
+    <div class="progress-track"><div class="progress-fill" id="pfill"></div></div>
+    <div class="progress-pct" id="ppct">0%</div>
+  </div>
+</div>
+<script>window.IS_ADMIN = {% if session.get('is_admin') %}true{% else %}false{% endif %};</script>
+<script src="/static/js/app.js"></script>
+
+<!-- LOAD OVERLAY -->
+<div class="load-overlay" id="loadOverlay">
+  <div class="spinner"></div>
+  <div style="font-size:0.82rem;color:var(--primary);font-weight:800;">ĐANG XỬ LÝ...</div>
+</div>
+
+<!-- LOGIN OVERLAY -->
+<div class="login-overlay" id="loginOverlay">
+  <div class="login-card" style="position:relative;">
+    <button class="login-close" onclick="closeLogin()" style="position:absolute;top:14px;right:14px;"><i class="fa-solid fa-xmark"></i></button>
+    <div class="login-logo"><i class="fa-solid fa-shield-halved"></i></div>
+    <div class="login-title">ADMIN LOGIN</div>
+    <div class="login-sub">Nhập thông tin quản trị để tiếp tục</div>
+    <div class="login-err" id="loginErr"></div>
+    <div id="loginSpinner" style="display:none;padding:14px 0;"><div class="spinner" style="margin:auto;"></div></div>
+    <form id="loginForm">
+      <div class="fg">
+        <label>Tài khoản</label>
+        <div class="input-with-icon"><i class="fa-solid fa-user"></i><input type="text" id="lu" required placeholder="Tài khoản admin"></div>
+      </div>
+      <div class="fg">
+        <label>Mật khẩu</label>
+        <div class="input-with-icon"><i class="fa-solid fa-key"></i><input type="password" id="lp" required placeholder="Mật khẩu admin"></div>
+      </div>
+      <button type="submit" class="btn btn-primary"><i class="fa-solid fa-right-to-bracket"></i> ĐĂNG NHẬP</button>
+    </form>
+  </div>
+</div>
+
+
+<!-- ADMIN HEADER -->
+<div class="admin-header" id="adminTopBar">
+  <div class="admin-avatar-wrap">
+    <div class="admin-avatar-ring2"></div>
+    <div class="admin-avatar-ring"></div>
+    <img src="/img.png" alt="avatar" class="admin-avatar-img">
+  </div>
+  <div class="admin-header-info">
+    <div class="admin-header-name">FOX ONE</div>
+    <div class="admin-header-tag"><div class="admin-header-dot"></div> Admin Panel</div>
+  </div>
+</div>
+
+<!-- HAMBURGER -->
+<div class="hamburger" id="hbg" onclick="toggleMenu()"><span></span><span></span><span></span></div>
+
+<!-- NAV DROPDOWN -->
+<div class="nav-dropdown" id="navDrop">
+  {% if session.get('is_admin') %}
+  <button class="nav-item active" onclick="sw('trangchu')"><i class="fa-solid fa-house"></i> Trang Chủ</button>
+  <button class="nav-item" onclick="sw('taokhoa')"><i class="fa-solid fa-plus-circle"></i> Tạo Khóa Mới</button>
+  <button class="nav-item" onclick="sw('database')"><i class="fa-solid fa-database"></i> Quản Lý Keys</button>
+  <button class="nav-item" onclick="sw('checkkey')"><i class="fa-solid fa-shield-halved"></i> Kiểm Tra Key</button>
+  <button class="nav-item" onclick="sw('keyfree')"><i class="fa-solid fa-gift"></i> Key Free</button>
+  <button class="nav-item" onclick="sw('keystats')"><i class="fa-solid fa-chart-bar"></i> Thống Kê Key</button>
+  <button class="nav-item" onclick="sw('getkeyconfig')"><i class="fa-solid fa-sliders"></i> GetKey Config</button>
+  <button class="nav-item" onclick="sw('weblog')"><i class="fa-solid fa-terminal"></i> Web Log</button>
+  <button class="nav-item" onclick="sw('quyenriengtu')"><i class="fa-solid fa-lock"></i> Bảo Mật</button>
+  <button class="nav-item" onclick="sw('devicereview')"><i class="fa-solid fa-mobile-screen-button"></i> Duyệt Thiết Bị</button>
+  <button class="nav-item" onclick="sw('checkip')"><i class="fa-solid fa-globe"></i> Check IP</button>
+  <button class="nav-item" onclick="sw('settings')"><i class="fa-solid fa-gear"></i> API Docs</button>
+  <div class="nav-divider"></div>
+  <a href="/logout" class="nav-item nav-item-logout" style="text-decoration:none;"><i class="fa-solid fa-arrow-right-from-bracket"></i> Đăng Xuất</a>
+  {% else %}
+  <button class="nav-item active" onclick="sw('trangchu');closeNav()"><i class="fa-solid fa-house"></i> Trang Chủ</button>
+  <button class="nav-item" onclick="sw('trangchu');setTimeout(function(){document.getElementById('sc-section').scrollIntoView({behavior:'smooth'})},200);closeNav()"><i class="fa-brands fa-soundcloud"></i> Tìm Nhạc</button>
+  <button class="nav-item" onclick="sw('trangchu');setTimeout(function(){document.getElementById('getkey-section').scrollIntoView({behavior:'smooth'})},200);closeNav()"><i class="fa-solid fa-key"></i> Lấy Key</button>
+  <button class="nav-item" onclick="sw('checkkey');closeNav()"><i class="fa-solid fa-search"></i> Tra Cứu Key</button>
+  <div class="nav-divider"></div>
+  <button class="nav-item" onclick="showLogin();closeNav()"><i class="fa-solid fa-user-shield"></i> Admin Login</button>
+  {% endif %}
+</div>
+
+<!-- MAIN PANEL -->
+<div class="panel">
+  <div class="panel-body">
+
+<!-- ========== TAB: TRANGCHU (User homepage) ========== -->
+<div class="tab active" id="tab-trangchu">
+
+  <!-- HERO -->
+  <div style="text-align:center;padding:26px 0 12px;position:relative;">
+    <div style="display:inline-flex;align-items:center;justify-content:center;width:76px;height:76px;background:var(--grad);border-radius:24px;font-size:2rem;color:#fff;box-shadow:0 12px 38px rgba(249,115,22,0.45);margin-bottom:16px;position:relative;">
+      <i class="fa-solid fa-fox"></i>
+      <div style="position:absolute;top:-7px;right:-7px;width:22px;height:22px;background:#fff;border-radius:50%;display:flex;align-items:center;justify-content:center;box-shadow:0 2px 10px rgba(0,0,0,0.18);">
+        <i class="fa-solid fa-key" style="font-size:0.62rem;color:var(--primary);"></i>
+      </div>
+    </div>
+    <div style="font-family:'Orbitron',sans-serif;font-size:1.7rem;font-weight:900;background:var(--grad);-webkit-background-clip:text;-webkit-text-fill-color:transparent;letter-spacing:4px;margin-bottom:4px;text-shadow:0 2px 18px rgba(249,115,22,0.35);">FOX ONE</div>
+    <div style="font-family:'Orbitron',sans-serif;font-size:0.85rem;font-weight:800;color:var(--text2);letter-spacing:5px;margin-bottom:4px;">COMMUNITY SERVER</div>
+    <div style="font-size:0.8rem;color:var(--text2);font-weight:600;"> Hệ thống key nhanh, bảo mật, ổn định </div>
+    <div style="display:flex;justify-content:center;gap:8px;margin-top:14px;flex-wrap:wrap;">
+      <span class="hero-pill"><i class="fa-solid fa-circle" style="color:#22c55e;font-size:0.5rem;animation:dotPulse 1.4s ease infinite;"></i> Hệ thống Online</span>
+      <span class="hero-pill"><i class="fa-solid fa-shield-halved"></i> Bảo mật cao</span>
+      <span class="hero-pill"><i class="fa-solid fa-bolt"></i> Phản hồi nhanh</span>
+    </div>
+  </div>
+
+  <!-- MUSIC PLAYER -->
+  <div class="music-player-card">
+    <div class="dj-header">
+      <i class="fa-solid fa-music" style="color:var(--primary);"></i>
+      <span class="dj-header-title">DJ MUSIC</span>
+      <div class="dj-eq-bars">
+        <div class="dj-eq-bar" id="eq1" style="height:6px;"></div>
+        <div class="dj-eq-bar" id="eq2" style="height:12px;"></div>
+        <div class="dj-eq-bar" id="eq3" style="height:9px;"></div>
+        <div class="dj-eq-bar" id="eq4" style="height:15px;"></div>
+        <div class="dj-eq-bar" id="eq5" style="height:7px;"></div>
+      </div>
+    </div>
+    <div class="dj-tracks">
+      <div class="dj-track-btn playing" id="trk0" onclick="switchTrack(0)">
+        <div class="dt-num">01</div>
+        <div class="dt-name">Track 1</div>
+      </div>
+      <div class="dj-track-btn" id="trk1" onclick="switchTrack(1)">
+        <div class="dt-num">02</div>
+        <div class="dt-name">nhac2.mp3</div>
+      </div>
+      <div class="dj-track-btn" id="trk2" onclick="switchTrack(2)">
+        <div class="dt-num">03</div>
+        <div class="dt-name">nhac3.mp3</div>
+      </div>
+    </div>
+    <div class="dj-main">
+      <div class="vinyl" id="vinylDisc">
+        <div class="vinyl-c"><i class="fa-solid fa-circle-dot" style="font-size:0.55rem;color:#fff;"></i></div>
+      </div>
+      <img class="dj-cover-sm" id="djCoverSm" src="" alt="">
+      <div class="dj-info">
+        <div class="music-title-text" id="musicTitle">nhac.mp3</div>
+        <div class="music-status-text" id="musicStatus"><i class="fa-solid fa-pause"></i> Tạm dừng</div>
+      </div>
+    </div>
+    <div class="dj-controls">
+      <button class="ctrl-btn" onclick="prevTrack()"><i class="fa-solid fa-backward-step"></i></button>
+      <button class="play-btn" id="playBtn" onclick="togglePlay()"><i class="fa-solid fa-play" id="playIcon"></i></button>
+      <button class="ctrl-btn" onclick="nextTrack()"><i class="fa-solid fa-forward-step"></i></button>
+      <button class="ctrl-btn" id="volBtn" onclick="toggleMute()" title="Tắt/bật tiếng"><i class="fa-solid fa-volume-high" id="volIcon"></i></button>
+    </div>
+    <input type="range" class="seek-bar" id="seekBar" value="0" min="0" max="100" step="0.1" oninput="onSeek()">
+    <div class="seek-times"><span id="curTime">0:00</span><span id="totTime">0:00</span></div>
+    <audio id="bgAudio"></audio>
+  </div>
+
+  <!-- SOUNDCLOUD SEARCH -->
+  <div class="sc-search-card" id="sc-section">
+    <div class="card-title"><i class="fa-brands fa-soundcloud"></i> TÌM NHẠC SOUNDCLOUD</div>
+    <div class="sc-search-row">
+      <input class="sc-input" id="scQuery" type="text" placeholder="Nhập tên bài hát..." onkeydown="if(event.key==='Enter')scSearch()">
+      <button class="sc-btn" id="scBtn" onclick="scSearch()"><i class="fa-solid fa-magnifying-glass"></i> Tìm</button>
+    </div>
+    <div class="sc-loading" id="scLoading">
+      <div class="sc-loading-spin"></div>
+      <div style="font-size:0.78rem;color:var(--muted);font-weight:700;">Đang tìm kiếm...</div>
+    </div>
+    <div class="sc-results" id="scResults">
+      <div id="scSongList"></div>
+      <div class="sc-listen-row">
+        <button class="sc-listen-btn" id="scListenBtn" onclick="scListen()" disabled><i class="fa-solid fa-play"></i> Nghe Bài Này</button>
+      </div>
+    </div>
+    <div id="scEmpty" style="display:none;text-align:center;padding:16px 0;color:var(--muted);font-size:0.82rem;font-weight:700;"><i class="fa-solid fa-face-meh" style="font-size:1.4rem;display:block;margin-bottom:8px;opacity:0.35;"></i>Không tìm thấy bài hát</div>
+    <div id="scError" style="display:none;text-align:center;padding:12px;background:rgba(239,68,68,0.07);border-radius:12px;color:var(--danger);font-size:0.8rem;font-weight:700;">
+      <span id="scErrorMsg"></span>
+      <div style="margin-top:8px;"><button onclick="scSearch()" style="background:var(--grad);color:#fff;border:none;border-radius:10px;padding:7px 18px;font-size:0.78rem;font-weight:800;cursor:pointer;font-family:inherit;"><i class="fa-solid fa-rotate-right"></i> Thử lại</button></div>
+    </div>
+  </div>
+
+  <!-- GET KEY FREE -->
+  <div class="getkey-card" id="getkey-section">
+    <div class="getkey-icon"><i class="fa-solid fa-fox"></i></div>
+    <div class="getkey-title">LẤY KEY MIỄN PHÍ</div>
+    <div class="getkey-sub"> Hoàn thành xác minh để nhận key miễn phí từ Fox One </div>
+    <div class="getkey-info-pills" id="getkeyPills">
+      <div class="getkey-pill" id="gkPillDur"><i class="fa-solid fa-clock"></i> <span id="gkPillDurTxt">Đang tải...</span></div>
+      <div class="getkey-pill" id="gkPillDev"><i class="fa-solid fa-mobile-screen-button"></i> <span id="gkPillDevTxt">Đang tải...</span></div>
+      <div class="getkey-pill"><i class="fa-solid fa-rotate"></i> Tối đa 3 lần/ngày</div>
+    </div>
+    <div id="gkBtn">
+      <button class="btn btn-primary" onclick="doGetKey()"><i class="fa-solid fa-gift"></i> NHẬN KEY NGAY</button>
+    </div>
+    <div id="gkSpinner" style="display:none;text-align:center;padding:16px 0;"><div class="spinner" style="margin:auto;"></div></div>
+    <div id="gkLink" style="display:none;">
+      <div class="free-link-box">
+        <div class="free-link-label">Link xác minh (bấm mở trong tab mới)</div>
+        <input class="free-link-input" id="gkLinkInput" readonly onclick="this.select()">
+        <div style="display:flex;gap:8px;">
+          <button class="btn btn-primary" onclick="window.open(document.getElementById('gkLinkInput').value,'_blank')" style="flex:1;margin-top:0;padding:9px;font-size:0.8rem;"><i class="fa-solid fa-arrow-up-right-from-square"></i> Mở Link</button>
+          <button class="btn btn-outline" onclick="copyText(document.getElementById('gkLinkInput').value)" style="flex:1;padding:9px;font-size:0.8rem;"><i class="fa-solid fa-copy"></i> Sao Chép</button>
+        </div>
+        <div style="margin-top:10px;font-size:0.75rem;color:var(--text2);line-height:1.65;"><i class="fa-solid fa-circle-info" style="color:var(--primary);margin-right:5px;"></i>Sau khi hoàn thành xác minh, key sẽ tự hiện tại link đã mở.</div>
+      </div>
+    </div>
+    <div id="gkErr" style="display:none;margin-top:12px;padding:12px;background:rgba(239,68,68,0.07);border-radius:12px;color:var(--danger);font-size:0.82rem;font-weight:700;text-align:center;"></div>
+  </div>
+
+  <!-- SOCIAL LINKS -->
+  <div class="card">
+    <div class="card-title"><i class="fa-solid fa-share-nodes"></i> KẾT NỐI VỚI ADMIN</div>
+    <a class="social-btn social-tg" href="https://t.me/hengaplaii2026" target="_blank">
+      <div class="s-icon"><i class="fa-brands fa-telegram"></i></div>
+      <div class="s-text"><span class="s-label">Telegram</span><span class="s-name">@hengaplaii2026</span></div>
+      <span class="s-arrow"><i class="fa-solid fa-chevron-right"></i></span>
+    </a>
+    <a class="social-btn social-tt" href="https://tiktok.com/@phedev" target="_blank">
+      <div class="s-icon"><i class="fa-brands fa-tiktok"></i></div>
+      <div class="s-text"><span class="s-label">TikTok 1</span><span class="s-name">@phedev</span></div>
+      <span class="s-arrow"><i class="fa-solid fa-chevron-right"></i></span>
+    </a>
+    <a class="social-btn social-tt" href="https://tiktok.com/@im._plong" target="_blank">
+      <div class="s-icon"><i class="fa-brands fa-tiktok"></i></div>
+      <div class="s-text"><span class="s-label">TikTok 2</span><span class="s-name">@im._plong</span></div>
+      <span class="s-arrow"><i class="fa-solid fa-chevron-right"></i></span>
+    </a>
+    <a class="social-btn social-tt" href="https://tiktok.com/@tin.trn0344" target="_blank">
+      <div class="s-icon"><i class="fa-brands fa-tiktok"></i></div>
+      <div class="s-text"><span class="s-label">TikTok 3</span><span class="s-name">@tin.trn0344</span></div>
+      <span class="s-arrow"><i class="fa-solid fa-chevron-right"></i></span>
+    </a>
+    <a class="social-btn social-yt" href="https://youtube.com/@dokimodsgame" target="_blank">
+      <div class="s-icon"><i class="fa-brands fa-youtube"></i></div>
+      <div class="s-text"><span class="s-label">YouTube</span><span class="s-name">@dokimodsgame</span></div>
+      <span class="s-arrow"><i class="fa-solid fa-chevron-right"></i></span>
+    </a>
+    <a class="social-btn social-fb" href="https://www.facebook.com/tran.tien.536579?mibextid=ZbWKwL" target="_blank">
+      <div class="s-icon"><i class="fa-brands fa-facebook-f"></i></div>
+      <div class="s-text"><span class="s-label">Facebook</span><span class="s-name"> Fox One Fanpage </span></div>
+      <span class="s-arrow"><i class="fa-solid fa-chevron-right"></i></span>
+    </a>
+  </div>
+
+</div><!-- end tab-trangchu -->
+
+<!-- ========== TAB: CHECK KEY (available without login) ========== -->
+<div class="tab" id="tab-checkkey">
+  <div class="section-header"><div class="section-header-title">Kiểm Tra Key</div></div>
+  <div class="card">
+    <div class="card-title"><i class="fa-solid fa-shield-halved"></i> TRA CỨU THÔNG TIN KEY</div>
+    <div class="fg">
+      <label>Nhập Key</label>
+      <div class="key-search-wrap">
+        <input type="text" id="ck_key" placeholder="ABCD-EFGH-IJKL-MNOP">
+      </div>
+    </div>
+    <button class="btn btn-primary" onclick="doCheckKey()"><i class="fa-solid fa-magnifying-glass"></i> KIỂM TRA</button>
+    <div id="ck_result" style="display:none;margin-top:14px;"></div>
+  </div>
+</div>
+
+{% if session.get('is_admin') %}
+
+<!-- ========== TAB: TẠO KHÓA ========== -->
+<div class="tab" id="tab-taokhoa">
+  <div class="section-header"><div class="section-header-title">Tạo Khóa Mới</div></div>
+  <div class="card">
+    <div class="card-title"><i class="fa-solid fa-plus-circle"></i> TẠO KEY MỚI</div>
+    <div class="fg"><label>Thời hạn</label>
+      <select id="tk_duration" onchange="updateExpiry()">
+        <option value="3600">1 giờ</option><option value="10800">3 giờ</option>
+        <option value="21600">6 giờ</option><option value="43200">12 giờ</option>
+        <option value="86400" selected>1 ngày</option><option value="259200">3 ngày</option>
+        <option value="604800">7 ngày</option><option value="1296000">15 ngày</option>
+        <option value="2592000">30 ngày</option><option value="7776000">3 tháng</option>
+        <option value="15552000">6 tháng</option><option value="31536000">1 năm</option>
+        <option value="315360000">Vĩnh viễn</option>
+      </select>
+    </div>
+    <div class="fg"><label>Hết hạn (dự kiến)</label><input type="text" id="tk_expiry_preview" readonly style="color:var(--primary);font-weight:800;"></div>
+    <div class="fg"><label>Số thiết bị tối đa</label><input type="number" id="tk_maxdev" value="1" min="1" max="99"></div>
+    <div class="fg"><label>Ghi chú (tuỳ chọn)</label><input type="text" id="tk_note" placeholder="Ghi chú cho key này..."></div>
+    <div class="fg"><label>Số lượng key</label><input type="number" id="tk_count" value="1" min="1" max="50"></div>
+    <div class="fg"><label>Loại key</label>
+      <div class="radio-row">
+        <label class="radio-opt"><input type="radio" name="tk_type" value="premium" checked> <span>Premium</span></label>
+        <label class="radio-opt"><input type="radio" name="tk_type" value="vip"> <span>VIP</span></label>
+      </div>
+    </div>
+    <button class="btn btn-primary" onclick="doCreateKey()"><i class="fa-solid fa-key"></i> TẠO KEY</button>
+    <div id="tk_result" style="margin-top:14px;display:none;"></div>
+  </div>
+</div>
+
+<!-- ========== TAB: DATABASE ========== -->
+<div class="tab" id="tab-database">
+  <div class="section-header"><div class="section-header-title">Quản Lý Keys</div></div>
+  <div class="card">
+    <div class="card-title"><i class="fa-solid fa-database"></i> DANH SÁCH KEYS</div>
+    <div style="display:flex;gap:8px;margin-bottom:12px;flex-wrap:wrap;">
+      <input type="text" id="db_filter" placeholder="Lọc key..." style="flex:1;padding:9px 13px;background:var(--card);border:1.5px solid var(--border);border-radius:11px;color:var(--text);font-size:0.84rem;min-width:120px;font-family:'Nunito',sans-serif;" oninput="renderDbTable()" onfocus="this.style.borderColor='var(--primary)'" onblur="this.style.borderColor='var(--border)'">
+      <button class="btn btn-primary" onclick="loadDatabase()" style="width:auto;margin-top:0;padding:9px 15px;font-size:0.82rem;white-space:nowrap;"><i class="fa-solid fa-rotate"></i> Tải lại</button>
+    </div>
+    <div class="tbl-wrap">
+      <table id="dbTable">
+        <thead><tr>
+          <th>Key</th><th>Loại</th><th>Hết hạn</th><th>Thiết bị</th><th>Trạng thái</th><th>Thao tác</th>
+        </tr></thead>
+        <tbody id="dbBody"><tr><td colspan="6" style="text-align:center;color:var(--muted);padding:24px;">Nhấn "Tải lại" để xem dữ liệu</td></tr></tbody>
+      </table>
+    </div>
+    <div id="db_page_info" style="text-align:center;font-size:0.72rem;color:var(--muted);margin-top:8px;font-weight:700;"></div>
+  </div>
+</div>
+
+<!-- ========== TAB: KEY FREE ========== -->
+<div class="tab" id="tab-keyfree">
+  <div class="section-header"><div class="section-header-title">Key Free</div></div>
+  <div class="card">
+    <div class="card-title"><i class="fa-solid fa-gift"></i> DANH SÁCH KEY FREE</div>
+    <button class="btn btn-primary" onclick="loadFreeKeys()" style="margin-bottom:14px;"><i class="fa-solid fa-rotate"></i> Tải danh sách key free</button>
+    <div class="tbl-wrap">
+      <table>
+        <thead><tr><th>Key</th><th>IP nhận</th><th>Thời gian</th><th>Hết hạn</th><th>Thao tác</th></tr></thead>
+        <tbody id="freeKeyBody"><tr><td colspan="5" style="text-align:center;color:var(--muted);padding:22px;">Nhấn tải để xem</td></tr></tbody>
+      </table>
+    </div>
+  </div>
+</div>
+
+<!-- ========== TAB: KEYSTATS ========== -->
+<div class="tab" id="tab-keystats">
+  <div class="section-header"><div class="section-header-title">Thống Kê Key</div></div>
+  <div id="statsCards" style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:14px;"></div>
+  <div class="card">
+    <div class="card-title"><i class="fa-solid fa-clock-rotate-left"></i> LỊCH SỬ TẠO KEY</div>
+    <div class="tbl-wrap"><table><thead><tr><th>Key</th><th>Loại</th><th>Tạo lúc</th><th>Hết hạn</th></tr></thead><tbody id="histBody"></tbody></table></div>
+  </div>
+  <button class="btn btn-primary" onclick="loadStats()"><i class="fa-solid fa-chart-bar"></i> TẢI THỐNG KÊ</button>
+</div>
+
+<!-- ========== TAB: QUYENRIENGTU (Security) ========== -->
+<div class="tab" id="tab-quyenriengtu">
+  <div class="section-header"><div class="section-header-title">Bảo Mật</div></div>
+  <div class="change-pass-card">
+    <div class="change-pass-icon"><i class="fa-solid fa-key"></i></div>
+    <div class="change-pass-title">ĐỔI MẬT KHẨU ADMIN</div>
+    <div class="change-pass-sub">Mật khẩu mới có hiệu lực ngay lập tức</div>
+    <div class="change-pass-warn" style="margin-top:16px;">
+      <i class="fa-solid fa-circle-check" style="color:#16a34a;margin-top:1px;"></i>
+      <span>Mật khẩu hiện tại và mật khẩu mới phải khác nhau. Độ dài tối thiểu 6 ký tự.</span>
+    </div>
+    <div class="fg"><label>Mật khẩu hiện tại</label><div class="input-with-icon"><i class="fa-solid fa-lock"></i><input type="password" id="cp_old" placeholder="Mật khẩu hiện tại"></div></div>
+    <div class="fg"><label>Mật khẩu mới</label><div class="input-with-icon"><i class="fa-solid fa-key"></i><input type="password" id="cp_new" placeholder="Mật khẩu mới (tối thiểu 6 ký tự)"></div></div>
+    <div class="fg"><label>Xác nhận mật khẩu mới</label><div class="input-with-icon"><i class="fa-solid fa-check-double"></i><input type="password" id="cp_confirm" placeholder="Nhập lại mật khẩu mới"></div></div>
+    <button class="btn btn-primary" onclick="doChangePass()"><i class="fa-solid fa-floppy-disk"></i> LƯU MẬT KHẨU MỚI</button>
+    <div id="cp_result" style="margin-top:12px;display:none;"></div>
+  </div>
+</div>
+
+<!-- ========== TAB: DEVICEREVIEW ========== -->
+<div class="tab" id="tab-devicereview">
+  <div class="section-header"><div class="section-header-title">Duyệt Thiết Bị</div></div>
+  <div class="card">
+    <div class="card-title"><i class="fa-solid fa-clock"></i> CHỜ DUYỆT</div>
+    <button class="btn btn-primary" onclick="loadDeviceRequests()" style="margin-bottom:14px;"><i class="fa-solid fa-rotate"></i> Tải danh sách</button>
+    <div id="devReqList"><div class="dev-empty"><i class="fa-solid fa-inbox"></i>Chưa có thiết bị chờ duyệt</div></div>
+  </div>
+  <div class="card">
+    <div class="card-title"><i class="fa-solid fa-circle-check"></i> ĐÃ DUYỆT</div>
+    <div id="devApvList"><div class="dev-empty"><i class="fa-solid fa-check-double"></i>Chưa có thiết bị được duyệt</div></div>
+  </div>
+</div>
+
+<!-- ========== TAB: CHECK IP ========== -->
+<div class="tab" id="tab-checkip">
+  <div class="section-header"><div class="section-header-title">Check IP</div></div>
+  <div class="card">
+    <div class="card-title"><i class="fa-solid fa-globe"></i> TRA CỨU THÔNG TIN IP</div>
+    <div class="fg"><label>Địa chỉ IP</label><input type="text" id="ci_ip" placeholder="Ví dụ: 1.2.3.4"></div>
+    <button class="btn btn-primary" onclick="doCheckIp()"><i class="fa-solid fa-magnifying-glass"></i> KIỂM TRA IP</button>
+    <div id="ci_result" style="display:none;margin-top:14px;"></div>
+  </div>
+</div>
+
+<!-- ========== TAB: GETKEY CONFIG ========== -->
+<div class="tab" id="tab-getkeyconfig">
+  <div class="section-header"><div class="section-header-title">GetKey Config</div></div>
+  <div class="card">
+    <div class="card-title"><i class="fa-solid fa-sliders"></i> CẤU HÌNH KEY FREE</div>
+    <div class="fg"><label>Thời hạn key (giờ)</label><input type="number" id="gkc_duration" value="12" min="1" max="720" placeholder="12"></div>
+    <div class="fg"><label>Số thiết bị tối đa</label><input type="number" id="gkc_maxdev" value="1" min="1" max="10" placeholder="1"></div>
+    <div class="fg"><label>Số lần lấy tối đa mỗi IP/ngày</label><input type="number" id="gkc_ratelimit" value="3" min="1" max="20" placeholder="3"></div>
+    <button class="btn btn-primary" onclick="saveGetkeyConfig()"><i class="fa-solid fa-floppy-disk"></i> LƯU CẤU HÌNH</button>
+    <div id="gkc_result" style="display:none;margin-top:12px;"></div>
+    <div style="margin-top:16px;">
+      <button class="btn btn-outline" onclick="loadGetkeyConfig()" style="width:100%;"><i class="fa-solid fa-rotate"></i> Tải cấu hình hiện tại</button>
+    </div>
+  </div>
+</div>
+
+<!-- ========== TAB: WEB LOG ========== -->
+<div class="tab" id="tab-weblog">
+  <div class="section-header"><div class="section-header-title">Web Log</div></div>
+  <div class="card">
+    <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:12px;">
+      <div class="card-title" style="margin-bottom:0;"><i class="fa-solid fa-terminal"></i> NHẬT KÝ TRUY CẬP</div>
+      <button class="btn btn-outline" onclick="loadWebLog()" style="padding:7px 14px;font-size:0.76rem;"><i class="fa-solid fa-rotate"></i> Tải lại</button>
+    </div>
+    <div id="webLogList"><div style="text-align:center;padding:24px;color:var(--muted);font-size:0.8rem;"><i class="fa-solid fa-terminal" style="font-size:1.4rem;display:block;margin-bottom:8px;opacity:0.3;"></i>Nhấn "Tải lại" để xem log</div></div>
+  </div>
+</div>
+
+<!-- ========== TAB: SETTINGS / API DOCS ========== -->
+<div class="tab" id="tab-settings">
+  <div class="section-header"><div class="section-header-title">Thông Báo & API Docs</div></div>
+
+  <!-- ANNOUNCEMENT MANAGEMENT -->
+  <div class="ann-admin-card">
+    <div class="ann-admin-label"><i class="fa-solid fa-bullhorn"></i> Quản Lý Thông Báo Trang Chủ</div>
+    <div style="font-size:0.76rem;color:var(--muted);margin-bottom:10px;line-height:1.6;">
+      Nội dung hiển thị khi người dùng vào trang. Để trống để tắt thông báo.
+    </div>
+    <textarea class="ann-admin-textarea" id="annAdminText" placeholder="Nhập nội dung thông báo...&#10;Hỗ trợ xuống hàng bình thường."></textarea>
+    <div style="display:flex;align-items:center;justify-content:space-between;margin-top:10px;">
+      <div id="annSaveStatus" style="font-size:0.76rem;color:var(--muted);"></div>
+      <button class="btn btn-primary" style="padding:9px 20px;font-size:0.8rem;" onclick="saveAnnouncement()">
+        <i class="fa-solid fa-floppy-disk"></i> Lưu thông báo
+      </button>
+    </div>
+  </div>
+
+  <div class="section-header" style="margin-top:4px;"><div class="section-header-title">API Docs</div></div>
+  <div class="ep-outer">
+    <div style="display:flex;align-items:center;gap:8px;margin-bottom:8px;">
+      <span class="ep-badge-post">POST</span>
+      <span class="ep-section-name">TẠO KEY</span>
+    </div>
+    <div class="ep-section-desc">Tạo key mới thông qua API. Yêu cầu xác thực admin.</div>
+    <div class="ep-card">
+      <div class="ep-path">/api/create_key</div>
+      <div class="ep-url-row" style="margin-top:8px;">
+        <span class="ep-url-text" id="ep_create">Đang tải...</span>
+        <button class="ep-copy-btn" onclick="copyText(document.getElementById('ep_create').innerText)"><i class="fa-solid fa-copy"></i></button>
+      </div>
+      <div class="ep-body-box">duration: 86400<br>max_devices: 1<br>note: test<br>count: 1<br>key_type: premium</div>
+    </div>
+  </div>
+  <div class="ep-outer">
+    <div style="display:flex;align-items:center;gap:8px;margin-bottom:8px;">
+      <span class="ep-badge-post" style="background:rgba(59,130,246,0.15);color:#1d4ed8;border-color:rgba(59,130,246,0.4);">GET</span>
+      <span class="ep-section-name" style="color:#1d4ed8;">KIỂM TRA KEY</span>
+    </div>
+    <div class="ep-section-desc">Kiểm tra thông tin và trạng thái key.</div>
+    <div class="ep-card">
+      <div class="ep-path">/api/check_key?key=XXXX</div>
+      <div class="ep-url-row" style="margin-top:8px;">
+        <span class="ep-url-text" id="ep_check">Đang tải...</span>
+        <button class="ep-copy-btn" onclick="copyText(document.getElementById('ep_check').innerText)"><i class="fa-solid fa-copy"></i></button>
+      </div>
+    </div>
+  </div>
+  <div class="ep-outer">
+    <div style="display:flex;align-items:center;gap:8px;margin-bottom:8px;">
+      <span class="ep-badge-post">POST</span>
+      <span class="ep-section-name">XÁC THỰC THIẾT BỊ</span>
+    </div>
+    <div class="ep-section-desc">Đăng ký/xác thực thiết bị với key.</div>
+    <div class="ep-card">
+      <div class="ep-path">/api/validate</div>
+      <div class="ep-url-row" style="margin-top:8px;">
+        <span class="ep-url-text" id="ep_validate">Đang tải...</span>
+        <button class="ep-copy-btn" onclick="copyText(document.getElementById('ep_validate').innerText)"><i class="fa-solid fa-copy"></i></button>
+      </div>
+      <div class="ep-body-box">key: YOUR_KEY<br>device_id: DEVICE_ID</div>
+    </div>
+  </div>
+</div>
+
+{% endif %}
+
+  </div><!-- end panel-body -->
+</div><!-- end panel -->
+
+<script>
+// =============================================
+// UTILS
+// =============================================
+var BASE = window.location.origin;
+function $(id){return document.getElementById(id);}
+function fmt(s){return s===undefined?'—':s;}
+
+
+// ===== ANNOUNCEMENT BANNER =====
+(function(){
+  var HIDE_KEY = 'ann_hide_until';
+  function shouldShow(){
+    var t = localStorage.getItem(HIDE_KEY);
+    if(!t) return true;
+    var n = parseInt(t, 10);
+    if(isNaN(n)){ localStorage.removeItem(HIDE_KEY); return true; }
+    return Date.now() > n;
+  }
+  function loadAnnouncement(){
+    fetch('/api/announcement').then(function(r){return r.json();}).then(function(d){
+      var txt = d.text || '';
+      if(!txt.trim()) return; // no announcement, don't show
+      var el = document.getElementById('annContent');
+      if(el) el.textContent = txt;
+      // Load into admin textarea too
+      var ta = document.getElementById('annAdminText');
+      if(ta) ta.value = txt;
+      if(shouldShow()){
+        var ov = document.getElementById('announceOverlay');
+        if(ov){ ov.classList.add('show'); }
+      }
+    }).catch(function(){});
+  }
+  window.closeAnnounce = function(){
+    var ov = document.getElementById('announceOverlay');
+    if(ov){ ov.classList.remove('show'); }
+  };
+  window.hideAnnounce2h = function(){
+    localStorage.setItem('ann_hide_until', String(Date.now() + 2*60*60*1000));
+    window.closeAnnounce();
+  };
+  window.saveAnnouncement = function(){
+    var ta = document.getElementById('annAdminText');
+    var st = document.getElementById('annSaveStatus');
+    if(!ta) return;
+    var txt = ta.value;
+    if(st) st.textContent = 'Đang lưu...';
+    adminFetch('/api/admin/update_announcement',
+      {method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({text:txt})},
+      function(d){
+        if(st) st.textContent = '✓ Đã lưu ' + new Date().toLocaleTimeString('vi');
+        // update live content
+        var el = document.getElementById('annContent');
+        if(el) el.textContent = txt;
+        toast(true, 'Đã lưu thông báo!');
+      },
+      function(err){ if(st) st.textContent = '✗ Lỗi: ' + (err||'Không thể lưu'); toast(false,'Lưu thất bại'); }
+    );
+  };
+  // Load after startup screen finishes (~1.5s)
+  setTimeout(loadAnnouncement, 1600);
+})();
+
+function toast(ok, msg){
+  var ov=$('toast-overlay'),box=$('toast-box'),sq=$('toast-square'),ii=$('toast-i'),lbl=$('toast-label');
+  box.className='toast-box '+(ok?'toast-box-success':'toast-box-error');
+  sq.className='toast-square'+(ok?'':' toast-sq-error');
+  lbl.className='toast-label'+(ok?'':' toast-lbl-error');
+  ii.className='fa-solid '+(ok?'fa-check':'fa-xmark');
+  lbl.textContent=msg?msg:(ok?'Thành công':'Thất bại');
+  ov.classList.remove('toast-fade-out');
+  box.classList.remove('toast-fade-out');
+  ov.classList.add('show');
+  setTimeout(function(){
+    box.classList.add('toast-fade-out');
+    setTimeout(function(){ov.classList.remove('show');box.classList.remove('toast-fade-out');},420);
+  },2500);
+}
+
+function copyText(t){
+  if(!t||t==='Đang tải...')return;
+  navigator.clipboard.writeText(t).then(function(){toast(true,'Đã sao chép!');}).catch(function(){
+    var a=document.createElement('textarea');a.value=t;document.body.appendChild(a);a.select();document.execCommand('copy');document.body.removeChild(a);toast(true,'Đã sao chép!');
+  });
+}
+
+// Admin-aware fetch — tự động xử lý lỗi kết nối và session hết hạn
+function adminFetch(url, options, onSuccess, onError){
+  var opts = options || {};
+  opts.credentials = 'same-origin';
+  opts.headers = opts.headers || {};
+  fetch(url, opts)
+  .then(function(r){
+    if(r.status===401){
+      hideLoad();
+      alert('⚠️ Phiên đăng nhập đã hết hạn. Vui lòng đăng nhập lại!');
+      location.reload();
+      return null;
+    }
+    if(r.status===404){
+      hideLoad();
+      if(onError) onError({status:'error',message:'Không tìm thấy API endpoint: '+url});
+      return null;
+    }
+    return r.json();
+  })
+  .then(function(d){
+    if(d && onSuccess) onSuccess(d);
+  })
+  .catch(function(err){
+    hideLoad();
+    console.error('adminFetch error:', url, err);
+    if(onError) onError({status:'error',message:'Lỗi kết nối: '+err.message});
+    else toast(false,'Mất kết nối');
+  });
+}
+
+function showLoad(){$('loadOverlay').style.display='flex';}
+function hideLoad(){$('loadOverlay').style.display='none';}
+
+function showLogin(){$('loginOverlay').classList.add('show');}
+function closeLogin(){$('loginOverlay').classList.remove('show');}
+
+function closeNav(){
+  $('navDrop').classList.remove('show');
+  $('hbg').classList.remove('open');
+}
+
+function toggleMenu(){
+  $('hbg').classList.toggle('open');
+  $('navDrop').classList.toggle('show');
+}
+
+// Close nav when clicking outside
+document.addEventListener('click', function(e){
+  var nd=$('navDrop'),hb=$('hbg');
+  if(nd && nd.classList.contains('show') && !nd.contains(e.target) && !hb.contains(e.target)){
+    closeNav();
+  }
+});
+
+// Tab switching
+var curTab='trangchu';
+function sw(name, closeMenu){
+  if(curTab===name && !closeMenu)return;
+  var old=$('tab-'+curTab);
+  var nw=$('tab-'+name);
+  if(!nw)return;
+  if(old){old.classList.remove('active');}
+  nw.classList.add('active');
+  curTab=name;
+  // Update nav active state
+  document.querySelectorAll('.nav-item').forEach(function(el){
+    el.classList.remove('active');
+  });
+  closeNav();
+  // Load data for tab
+  if(name==='database')loadDatabase();
+  if(name==='weblog')loadWebLog();
+  if(name==='keystats')loadStats();
+  if(name==='keyfree')loadFreeKeys();
+  if(name==='devicereview')loadDeviceRequests();
+  if(name==='getkeyconfig')loadGetkeyConfig();
+  if(name==='settings')loadApiUrls();
+}
+
+// =============================================
+// LOGIN
+// =============================================
+$('loginForm').addEventListener('submit',function(e){
+  e.preventDefault();
+  var u=$('lu').value.trim(),p=$('lp').value.trim();
+  if(!u||!p)return;
+  $('loginErr').style.display='none';
+  $('loginSpinner').style.display='block';
+  $('loginForm').style.display='none';
+  fetch('/login',{method:'POST',credentials:'same-origin',headers:{'Content-Type':'application/x-www-form-urlencoded'},body:'user='+encodeURIComponent(u)+'&pass='+encodeURIComponent(p)})
+  .then(function(r){return r.json();})
+  .then(function(d){
+    $('loginSpinner').style.display='none';
+    $('loginForm').style.display='block';
+    if(d.status==='success'||d.success){toast(true);setTimeout(function(){location.reload();},600);}
+    else{$('loginErr').textContent=d.message||'Sai tài khoản hoặc mật khẩu';$('loginErr').style.display='block';}
+  }).catch(function(){
+    $('loginSpinner').style.display='none';
+    $('loginForm').style.display='block';
+    $('loginErr').textContent='Lỗi kết nối';$('loginErr').style.display='block';
+  });
+});
+
+// =============================================
+// MUSIC PLAYER
+// =============================================
+var tracks=['/nhac.mp3','/nhac2.mp3','/nhac3.mp3'];
+var trackNames=['Nhạc 1','Nhạc 2','Nhạc 3'];
+var curTrack=0;
+var scTrack={url:null,title:null,cover:null};
+var isScTrack=false;
+var audio=$('bgAudio');
+var isPlaying=false;
+
+function fmtTime(s){
+  if(isNaN(s)||!isFinite(s))return'0:00';
+  var m=Math.floor(s/60),sc=Math.floor(s%60);
+  return m+':'+(sc<10?'0':'')+sc;
+}
+
+function setEq(on){
+  var delays=['0s','0.15s','0.3s','0.1s','0.25s'];
+  for(var i=1;i<=5;i++){
+    var b=$('eq'+i);
+    if(on){b.classList.add('active');b.style.animationDelay=delays[i-1];b.style.animationDuration=(0.45+Math.random()*0.3)+'s';}
+    else{b.classList.remove('active');}
+  }
+}
+
+function updateTrackUI(){
+  for(var i=0;i<3;i++){
+    var b=$('trk'+i);
+    if(b){b.classList.toggle('playing',!isScTrack && i===curTrack);}
+  }
+  var vn=$('vinylDisc'),cs=$('djCoverSm');
+  if(isScTrack && scTrack.cover){
+    cs.src=scTrack.cover; cs.style.display='block'; vn.style.display='none';
+    $('musicTitle').textContent=scTrack.title||'SoundCloud Track';
+  } else {
+    cs.style.display='none'; vn.style.display='flex';
+    $('musicTitle').textContent=trackNames[curTrack];
+  }
+}
+
+function switchTrack(idx){
+  isScTrack=false; curTrack=idx; isPlaying=false;
+  audio.src=tracks[idx]; audio.load();
+  $('playIcon').className='fa-solid fa-play';
+  $('musicStatus').innerHTML='<i class="fa-solid fa-pause"></i> Tạm dừng';
+  $('vinylDisc').classList.remove('spin');
+  setEq(false);
+  updateTrackUI();
+}
+
+function togglePlay(){
+  if(audio.paused){
+    audio.play().then(function(){
+      isPlaying=true;
+      $('playIcon').className='fa-solid fa-pause';
+      $('musicStatus').innerHTML='<i class="fa-solid fa-play"></i> Đang phát';
+      $('vinylDisc').classList.add('spin');
+      setEq(true);
+    }).catch(function(){});
+  } else {
+    audio.pause();
+    isPlaying=false;
+    $('playIcon').className='fa-solid fa-play';
+    $('musicStatus').innerHTML='<i class="fa-solid fa-pause"></i> Tạm dừng';
+    $('vinylDisc').classList.remove('spin');
+    setEq(false);
+  }
+}
+
+function prevTrack(){
+  if(isScTrack){isScTrack=false;switchTrack(curTrack);return;}
+  switchTrack((curTrack-1+3)%3);
+}
+function nextTrack(){
+  if(isScTrack){isScTrack=false;switchTrack((curTrack+1)%3);return;}
+  switchTrack((curTrack+1)%3);
+}
+
+var isMuted=false;
+function toggleMute(){
+  isMuted=!isMuted; audio.muted=isMuted;
+  $('volIcon').className='fa-solid '+(isMuted?'fa-volume-xmark':'fa-volume-high');
+}
+
+function onSeek(){
+  if(audio.duration)audio.currentTime=($('seekBar').value/100)*audio.duration;
+}
+
+audio.addEventListener('timeupdate',function(){
+  if(!audio.duration)return;
+  var p=(audio.currentTime/audio.duration)*100;
+  $('seekBar').value=p;
+  $('curTime').textContent=fmtTime(audio.currentTime);
+  $('totTime').textContent=fmtTime(audio.duration);
+});
+audio.addEventListener('ended',function(){nextTrack();});
+audio.addEventListener('loadedmetadata',function(){$('totTime').textContent=fmtTime(audio.duration);});
+var _scRetrying=false;
+audio.addEventListener('error',function(){
+  isPlaying=false;
+  $('playIcon').className='fa-solid fa-play';
+  $('vinylDisc').classList.remove('spin');
+  setEq(false);
+  if(isScTrack && scTrack.scPageUrl && !_scRetrying){
+    // Auto-retry: re-fetch stream URL using original SoundCloud page URL (CDN links expire)
+    _scRetrying=true;
+    $('musicStatus').innerHTML='<i class="fa-solid fa-rotate fa-spin"></i> Đang kết nối lại...';
+    var fd=new FormData(); fd.append('url',scTrack.scPageUrl);
+    fetch('/api/get_stream_url',{method:'POST',body:fd})
+    .then(function(r){return r.json();})
+    .then(function(d){
+      _scRetrying=false;
+      if(d.status==='success'&&d.stream_url){
+        audio.src=d.stream_url; audio.load();
+        audio.play().then(function(){
+          isPlaying=true;
+          $('playIcon').className='fa-solid fa-pause';
+          $('musicStatus').innerHTML='<i class="fa-solid fa-play"></i> Đang phát';
+          $('vinylDisc').classList.add('spin');
+          setEq(true);
+        }).catch(function(){
+          isScTrack=false;
+          $('musicStatus').innerHTML='<i class="fa-solid fa-triangle-exclamation"></i> Không thể phát';
+        });
+      } else {
+        isScTrack=false;
+        $('musicTitle').textContent='SoundCloud - Lỗi';
+        $('musicStatus').innerHTML='<i class="fa-solid fa-triangle-exclamation"></i> Lỗi phát nhạc';
+        $('djCoverSm').style.display='none';
+        $('vinylDisc').style.display='flex';
+      }
+    }).catch(function(){
+      _scRetrying=false;
+      isScTrack=false;
+      $('musicStatus').innerHTML='<i class="fa-solid fa-triangle-exclamation"></i> Mất kết nối';
+    });
+  } else {
+    $('musicStatus').innerHTML='<i class="fa-solid fa-triangle-exclamation"></i> Lỗi phát nhạc';
+    if(isScTrack){
+      _scRetrying=false; isScTrack=false;
+      $('djCoverSm').style.display='none'; $('vinylDisc').style.display='flex';
+    }
+  }
+});
+
+// Init first track
+audio.src=tracks[0];
+
+// =============================================
+// SOUNDCLOUD SEARCH
+// =============================================
+var selectedSong=null;
+
+function scSearch(){
+  var q=$('scQuery').value.trim();
+  if(!q)return;
+  $('scBtn').disabled=true;
+  $('scResults').style.display='none';
+  $('scEmpty').style.display='none';
+  $('scError').style.display='none';
+  $('scLoading').style.display='block';
+  selectedSong=null; _scSongs=[]; $('scListenBtn').disabled=true;
+  fetch('/api/search_music?q='+encodeURIComponent(q))
+  .then(function(r){return r.json();})
+  .then(function(d){
+    $('scLoading').style.display='none';
+    $('scBtn').disabled=false;
+    if(d.status==='success' && d.songs && d.songs.length>0){
+      $('scResults').style.display='block';
+      renderSongList(d.songs);
+    } else if(d.status==='success'){
+      $('scEmpty').style.display='block';
+    } else {
+      var scErrMsg=$('scErrorMsg'); if(scErrMsg)scErrMsg.textContent=d.message||'Lỗi tìm kiếm';
+      $('scError').style.display='block';
+    }
+  }).catch(function(e){
+    $('scLoading').style.display='none';
+    $('scBtn').disabled=false;
+    var scErrMsg=$('scErrorMsg'); if(scErrMsg)scErrMsg.textContent='Lỗi kết nối: '+e.message+'. Vui lòng thử lại!';
+    $('scError').style.display='block';
+  });
+}
+
+// Global song list — avoids double-JSON / HTML-entity issues in onclick attrs
+var _scSongs = [];
+
+function renderSongList(songs){
+  _scSongs = songs; // store in global array, reference by index only
+  var html='';
+  songs.forEach(function(s,i){
+    var cover=s.cover?('<img class="sc-cover" src="'+s.cover+'" alt="" onerror="this.hidden=true">'):('<div class="sc-cover-placeholder"><i class="fa-solid fa-music"></i></div>');
+    html+='<div class="sc-song-card" id="sc_card_'+i+'" onclick="selectSong('+i+')">'
+    +cover
+    +'<div class="sc-song-info"><div class="sc-song-title">'+s.title.replace(/</g,'&lt;').replace(/>/g,'&gt;')+'</div><div class="sc-song-meta"><i class="fa-brands fa-soundcloud"></i> SoundCloud</div></div>'
+    +'<div class="sc-sel-indicator" id="sc_sel_'+i+'"><i class="fa-solid fa-check" style="font-size:0.65rem;"></i></div>'
+    +'</div>';
+  });
+  $('scSongList').innerHTML=html;
+}
+
+function selectSong(idx){
+  if(idx < 0 || idx >= _scSongs.length) return;
+  selectedSong = _scSongs[idx];
+  document.querySelectorAll('.sc-song-card').forEach(function(el,i){
+    el.classList.toggle('selected',i===idx);
+  });
+  $('scListenBtn').disabled=false;
+}
+
+function scListen(){
+  if(!selectedSong)return;
+  $('scListenBtn').disabled=true;
+  $('scListenBtn').innerHTML='<div class="spinner spinner-sm" style="border-top-color:#fff;border-color:rgba(255,255,255,0.3);"></div> Đang lấy link...';
+  var fd=new FormData(); fd.append('url',selectedSong.url);
+  fetch('/api/get_stream_url',{method:'POST',body:fd})
+  .then(function(r){return r.json();})
+  .then(function(d){
+    $('scListenBtn').innerHTML='<i class="fa-solid fa-play"></i> Nghe Bài Này';
+    $('scListenBtn').disabled=false;
+    if(d.status==='success'){
+      isScTrack=true;
+      scTrack.url=d.stream_url;
+      scTrack.scPageUrl=selectedSong.url; // SoundCloud page URL for retry
+      scTrack.title=d.title||selectedSong.title;
+      scTrack.cover=d.cover||selectedSong.cover||'';
+      audio.src=d.stream_url; audio.load();
+      updateTrackUI();
+      audio.play().then(function(){
+        isPlaying=true;
+        $('playIcon').className='fa-solid fa-pause';
+        $('musicStatus').innerHTML='<i class="fa-solid fa-play"></i> Đang phát';
+        $('vinylDisc').classList.add('spin');
+        setEq(true);
+        sw('trangchu');
+        setTimeout(function(){$('bgAudio').scrollIntoView({behavior:'smooth',block:'center'});},400);
+      }).catch(function(){});
+    } else {
+      toast(false); alert('Lỗi: '+(d.message||'Không lấy được stream URL'));
+    }
+  }).catch(function(e){
+    $('scListenBtn').innerHTML='<i class="fa-solid fa-play"></i> Nghe Bài Này';
+    $('scListenBtn').disabled=false;
+    toast(false);
+  });
+}
+
+// =============================================
+// GET KEY FREE
+// =============================================
+function doGetKey(){
+  $('gkBtn').style.display='none';
+  $('gkSpinner').style.display='block';
+  $('gkLink').style.display='none';
+  $('gkErr').style.display='none';
+  fetch('/api/getkey',{method:'POST'})
+  .then(function(r){return r.json();})
+  .then(function(d){
+    $('gkSpinner').style.display='none';
+    if(d.status==='success'&&(d.shortenedUrl||d.link)){
+      var url=d.shortenedUrl||d.link;
+      window.location.href=url;
+    } else {
+      $('gkErr').textContent=d.message||'Lỗi tạo link';
+      $('gkErr').style.display='block';
+      $('gkBtn').style.display='block';
+    }
+  }).catch(function(){
+    $('gkSpinner').style.display='none';
+    $('gkErr').textContent='Lỗi kết nối';
+    $('gkErr').style.display='block';
+    $('gkBtn').style.display='block';
+  });
+}
+
+// =============================================
+// CHECK KEY (public)
+// =============================================
+function doCheckKey(){
+  var k=$('ck_key').value.trim();
+  if(!k){return;}
+  showLoad();
+  var fd=new FormData(); fd.append('key',k);
+  fetch('/',{method:'POST',body:fd})
+  .then(function(r){return r.json();})
+  .then(function(d){
+    hideLoad();
+    var box=$('ck_result');
+    box.style.display='block';
+    if(d.exists){
+      var st=d.key_status||'—';
+      var stClass=(st==='Đã kích hoạt')?'badge-yes':(st==='Hết hạn'?'badge-no':'badge-warn');
+      var stIcon=(st==='Đã kích hoạt')?'check':(st==='Hết hạn'?'xmark':'clock');
+      var badge='<span class="badge '+stClass+'"><i class="fa-solid fa-'+stIcon+'"></i> '+st+'</span>';
+      var usedc=d.used_devices!==undefined?d.used_devices:'—';
+      var maxd=d.max_devices!==undefined?d.max_devices:'—';
+      box.innerHTML='<div class="result-box"><div class="result-title"><i class="fa-solid fa-circle-info" style="color:var(--primary);"></i> Thông tin Key</div>'
+        +'<div class="info-row"><span class="info-label">Key</span><span class="info-val key-val" style="font-size:0.68rem;word-break:break-all;">'+k+'</span></div>'
+        +'<div class="info-row"><span class="info-label">Trạng thái</span><span class="info-val">'+badge+'</span></div>'
+        +'<div class="info-row"><span class="info-label">Thời hạn cài</span><span class="info-val">'+fmt(d.duration)+'</span></div>'
+        +'<div class="info-row"><span class="info-label">Ngày hết hạn</span><span class="info-val">'+fmt(d.expiry_date)+'</span></div>'
+        +'<div class="info-row"><span class="info-label">Thiết bị</span><span class="info-val">'+fmt(usedc)+' / '+fmt(maxd)+'</span></div>'
+        +'<div class="info-row"><span class="info-label">Kích hoạt lúc</span><span class="info-val">'+fmt(d.activated_time_str||d.activated_time)+'</span></div>'
+        +'<div class="info-row"><span class="info-label">Ngày tạo</span><span class="info-val">'+fmt(d.created_at_str||d.created_at)+'</span></div>'
+        +'</div>';
+    } else {
+      box.innerHTML='<div style="background:rgba(239,68,68,0.07);border:1px solid rgba(239,68,68,0.2);border-radius:12px;padding:16px;color:var(--danger);font-size:0.84rem;font-weight:700;text-align:center;"><i class="fa-solid fa-circle-xmark" style="font-size:1.5rem;display:block;margin-bottom:8px;"></i>'+(d.msg||d.message||'Mã Key không tồn tại trên hệ thống!')+'</div>';
+    }
+  }).catch(function(){hideLoad();});
+}
+
+{% if session.get('is_admin') %}
+// =============================================
+// DATABASE TAB
+// =============================================
+var dbAll=[];
+function loadDatabase(){
+  showLoad();
+  fetch('/api/list_keys',{credentials:'same-origin'})
+  .then(function(r){if(r.status===401){hideLoad();alert('Phiên đăng nhập hết hạn!');location.reload();return null;}return r.json();})
+  .then(function(d){
+    hideLoad();
+    dbAll=Array.isArray(d)?d:(Array.isArray(d.data)?d.data:[]);
+    renderDbTable();
+  }).catch(function(){hideLoad();});
+}
+
+var _dbKeyArr=[];
+function renderDbTable(){
+  var f=$('db_filter').value.trim().toLowerCase();
+  var rows=dbAll.filter(function(k){
+    return !f||(k.key||'').toLowerCase().includes(f)||(k.creator_info||'').toLowerCase().includes(f)||(k.status||'').toLowerCase().includes(f);
+  });
+  _dbKeyArr=rows.map(function(k){return k.key;});
+  var html='';
+  rows.forEach(function(k,i){
+    var st=k.status||'—';
+    var locked=k.is_locked||false;
+    var badge;
+    if(locked) badge='<span class="badge badge-no"><i class="fa-solid fa-lock"></i> Khóa</span>';
+    else if(st==='Đã kích hoạt') badge='<span class="badge badge-yes"><i class="fa-solid fa-check"></i> Hoạt động</span>';
+    else if(st==='Chưa kích hoạt') badge='<span class="badge badge-warn"><i class="fa-solid fa-clock"></i> Chưa KH</span>';
+    else badge='<span class="badge badge-no"><i class="fa-solid fa-xmark"></i> Hết hạn</span>';
+    var typStr=(k.key||'').startsWith('FREE')?'FREE':((k.key||'').startsWith('VIP')?'VIP':'KEY');
+    var tbStr=k.thiet_bi||'—';
+    html+='<tr style="'+(locked?'opacity:0.65;':'')+'">'
+      +'<td><span class="key-val" onclick="copyKeyBtn(\''+k.key.replace(/'/g,"\'")+'\')" style="cursor:pointer;font-size:0.65rem;" title="Click để copy">'+k.key+'</span></td>'
+      +'<td><span class="badge badge-warn">'+typStr+'</span></td>'
+      +'<td style="font-size:0.73rem;color:var(--text2);">'+fmt(k.han_dung||'—')+'</td>'
+      +'<td style="text-align:center;">'+tbStr+'</td>'
+      +'<td>'+badge+'</td>'
+      +'<td><div class="td-actions" style="gap:3px;flex-wrap:wrap;">'
+      +'<button class="btn-sm btn-sm-blue" title="Sao chép key" onclick="copyKeyBtn(\''+k.key.replace(/'/g,"\'")+'\')" style="padding:4px 7px;"><i class="fa-solid fa-copy"></i></button>'
+      +'<button class="btn-sm btn-sm-warn" title="Gia hạn key" onclick="extendKeyPrompt(_dbKeyArr['+i+'])" style="padding:4px 7px;"><i class="fa-solid fa-clock"></i></button>'
+      +'<button class="btn-sm" title="Reset thiết bị" onclick="resetDeviceBtn(_dbKeyArr['+i+'])" style="padding:4px 7px;background:rgba(59,130,246,0.1);color:#2563eb;border:1px solid rgba(59,130,246,0.25);border-radius:8px;"><i class="fa-solid fa-rotate"></i></button>'
+      +'<button class="btn-sm" title="'+(locked?'Mở khóa':'Khóa')+' key" onclick="toggleLockKey(_dbKeyArr['+i+'],'+locked+')" style="padding:4px 7px;background:'+(locked?'rgba(34,197,94,0.1)':'rgba(239,68,68,0.1)')+';color:'+(locked?'#16a34a':'#ef4444')+';border:1px solid '+(locked?'rgba(34,197,94,0.25)':'rgba(239,68,68,0.25)')+';border-radius:8px;"><i class="fa-solid '+(locked?'fa-lock-open':'fa-lock')+'"></i></button>'
+      +'<button class="btn-sm" title="Sao chép tạo key mới" onclick="cloneKey(_dbKeyArr['+i+'])" style="padding:4px 7px;background:rgba(249,115,22,0.1);color:var(--primary);border:1px solid rgba(249,115,22,0.25);border-radius:8px;"><i class="fa-solid fa-clone"></i></button>'
+      +'<button class="btn-sm btn-sm-red" title="Xóa key" onclick="deleteKey(_dbKeyArr['+i+'])" style="padding:4px 7px;"><i class="fa-solid fa-trash"></i></button>'
+      +'</div></td>'
+      +'</tr>';
+  });
+  $('dbBody').innerHTML=html||'<tr><td colspan="6" style="text-align:center;color:var(--muted);padding:22px;">Không có key nào</td></tr>';
+  $('db_page_info').textContent='Tổng: '+rows.length+' key'+(f?' (lọc từ '+dbAll.length+')':'');
+}
+
+function copyKeyBtn(key){
+  navigator.clipboard.writeText(key).catch(function(){
+    var a=document.createElement('textarea');a.value=key;document.body.appendChild(a);a.select();document.execCommand('copy');document.body.removeChild(a);
+  });
+  toast(true,'Đã sao chép!');
+}
+
+function resetDeviceBtn(key){
+  if(!confirm('Reset tất cả thiết bị của key '+key+'?\nKey sẽ trở về trạng thái chưa kích hoạt.'))return;
+  showLoad();
+  fetch('/reset/'+encodeURIComponent(key),{credentials:'same-origin'})
+  .then(function(r){
+    if(r.status===401){hideLoad();alert('Phiên đăng nhập hết hạn!');location.reload();return null;}
+    return r.json();
+  })
+  .then(function(d){if(d){hideLoad();toast(d.status==='success');if(d.status==='success')loadDatabase();}})
+  .catch(function(e){hideLoad();toast(false,'Lỗi kết nối');});
+}
+
+function toggleLockKey(key,isLocked){
+  var action=isLocked?'mở khóa':'khóa';
+  if(!confirm((isLocked?'Mở khóa':'Khóa')+' key '+key+'?\n'+(isLocked?'Key sẽ có thể sử dụng được.':'Key sẽ bị vô hiệu hóa ngay lập tức.')))return;
+  showLoad();
+  var fd=new FormData(); fd.append('key',key);
+  fetch('/api/lock_key',{method:'POST',body:fd,credentials:'same-origin'})
+  .then(function(r){
+    if(r.status===401){hideLoad();alert('Phiên đăng nhập hết hạn!');location.reload();return null;}
+    return r.json();
+  })
+  .then(function(d){if(d){hideLoad();toast(d.status==='success');if(d.status==='success')loadDatabase();}})
+  .catch(function(e){hideLoad();toast(false,'Lỗi kết nối');});
+}
+
+function cloneKey(key){
+  if(!confirm('Tạo bản sao key '+key+'?\nSẽ tạo một key mới với cùng cấu hình.'))return;
+  showLoad();
+  var fd=new FormData(); fd.append('key',key);
+  fetch('/api/copy_key',{method:'POST',body:fd,credentials:'same-origin'})
+  .then(function(r){
+    if(r.status===401){hideLoad();alert('Phiên đăng nhập hết hạn!');location.reload();return null;}
+    return r.json();
+  })
+  .then(function(d){
+    if(!d) return;
+    hideLoad();
+    if(d.status==='success'){
+      toast(true,'Sao chép thành công!');
+      if(d.new_key){copyKeyBtn(d.new_key);}
+      loadDatabase();
+    } else {
+      toast(false, d.message||'Thất bại');
+    }
+  }).catch(function(e){hideLoad();toast(false,'Lỗi kết nối');});
+}
+
+function deleteKey(key){
+  if(!confirm('Xóa key '+key+'?'))return;
+  showLoad();
+  fetch('/delete/'+encodeURIComponent(key),{credentials:'same-origin'})
+  .then(function(r){
+    if(r.status===401){hideLoad();alert('Phiên đăng nhập hết hạn, vui lòng đăng nhập lại!');location.reload();return null;}
+    return r.json();
+  })
+  .then(function(d){if(d){hideLoad();toast(d.status==='success');if(d.status==='success')loadDatabase();}})
+  .catch(function(e){hideLoad();toast(false,'Lỗi kết nối: '+e.message);});
+}
+
+// resetDevices is aliased to resetDeviceBtn (same function, kept for compatibility)
+function resetDevices(key){ resetDeviceBtn(key); }
+
+function extendKeyPrompt(key){
+  var h=prompt('Gia hạn thêm bao nhiêu giờ?','24');
+  if(!h||isNaN(h))return;
+  showLoad();
+  var fd=new FormData(); fd.append('key',key); fd.append('hours',h);
+  fetch('/api/extend_key',{method:'POST',body:fd,credentials:'same-origin'})
+  .then(function(r){
+    if(r.status===401){hideLoad();alert('Phiên đăng nhập hết hạn!');location.reload();return null;}
+    return r.json();
+  })
+  .then(function(d){if(d){hideLoad();toast(d.status==='success');if(d.status==='success')loadDatabase();}})
+  .catch(function(e){hideLoad();toast(false,'Lỗi kết nối');});
+}
+
+// =============================================
+// CREATE KEY
+// =============================================
+function updateExpiry(){
+  var dur=parseInt($('tk_duration').value);
+  var d=new Date(Date.now()+dur*1000);
+  $('tk_expiry_preview').value=d.toLocaleString('vi-VN');
+}
+updateExpiry();
+
+function doCreateKey(){
+  var dur=$('tk_duration').value;
+  var maxd=$('tk_maxdev').value;
+  var note=$('tk_note').value;
+  var cnt=$('tk_count').value;
+  var typ=document.querySelector('input[name="tk_type"]:checked').value;
+  showLoad();
+  var fd=new FormData();
+  fd.append('duration',dur); fd.append('max_devices',maxd); fd.append('note',note);
+  fd.append('count',cnt); fd.append('key_type',typ);
+  fetch('/api/create_key',{method:'POST',body:fd,credentials:'same-origin'})
+  .then(function(r){
+    if(r.status===401){hideLoad();alert('Phiên đăng nhập hết hạn!');location.reload();return null;}
+    return r.json();
+  })
+  .then(function(d){
+    if(!d) return;
+    hideLoad(); toast(d.status==='success',d.status==='success'?'Tạo key thành công!':'Tạo key thất bại');
+    var box=$('tk_result');
+    box.style.display='block';
+    if(d.status==='success'){
+      var keys=d.keys||d.key||[];
+      if(!Array.isArray(keys))keys=[keys];
+      var html='<div class="result-box"><div class="result-title"><i class="fa-solid fa-check-circle" style="color:var(--success);"></i> TẠO THÀNH CÔNG '+keys.length+' KEY</div>';
+      keys.forEach(function(k){
+        html+='<div style="display:flex;align-items:center;justify-content:space-between;padding:8px 0;border-bottom:1px solid var(--border);">'
+          +'<span class="key-val">'+k+'</span>'
+          +'<button class="btn-sm btn-sm-blue" onclick="copyText(this.previousElementSibling.textContent)"><i class="fa-solid fa-copy"></i> Sao chép</button>'
+          +'</div>';
+      });
+      box.innerHTML=html+'</div>';
+      // Auto-refresh database list after creating keys
+      loadDatabase();
+    } else {
+      box.innerHTML='<div style="background:rgba(239,68,68,0.07);border:1px solid rgba(239,68,68,0.2);border-radius:12px;padding:12px;color:var(--danger);font-size:0.84rem;">'+( d.message||'Lỗi tạo key')+'</div>';
+    }
+  }).catch(function(e){hideLoad();toast(false,'Lỗi kết nối: '+e.message);});
+}
+
+// =============================================
+// STATS
+// =============================================
+function loadStats(){
+  showLoad();
+  fetch('/api/key_stats',{credentials:'same-origin'})
+  .then(function(r){if(r.status===401){hideLoad();alert('Phiên đăng nhập hết hạn!');location.reload();return null;}return r.json();})
+  .then(function(d){
+    hideLoad();
+    var sc=$('statsCards');
+    var total=d.total||0,active=d.active||d.activated||0,expired=d.expired||0,pending=d.pending||d.not_activated||0;
+    var devTotal=d.total_devices||0;
+    var stats=[
+      {label:'Tổng Keys',val:total,icon:'key',color:'var(--primary)'},
+      {label:'Đã kích hoạt',val:active,icon:'check-circle',color:'var(--success)'},
+      {label:'Hết hạn',val:expired,icon:'circle-xmark',color:'var(--danger)'},
+      {label:'Chưa kích hoạt',val:pending,icon:'clock',color:'#f59e0b'},
+    ];
+    sc.innerHTML=stats.map(function(s){
+      return '<div class="card" style="padding:16px;margin-bottom:0;">'
+        +'<div style="font-size:1.6rem;color:'+s.color+';margin-bottom:6px;"><i class="fa-solid fa-'+s.icon+'"></i></div>'
+        +'<div style="font-size:1.4rem;font-weight:900;color:var(--text);">'+s.val+'</div>'
+        +'<div style="font-size:0.73rem;color:var(--muted);font-weight:700;text-transform:uppercase;letter-spacing:0.5px;">'+s.label+'</div>'
+        +'</div>';
+    }).join('');
+    // Render recent keys as history
+    if(d.keys){
+      var rows=d.keys.map(function(h){
+        var badge='';
+        if(h.status==='Đã kích hoạt')badge='<span class="badge badge-ok" style="font-size:0.6rem;">Active</span>';
+        else if(h.status==='Hết hạn')badge='<span class="badge badge-err" style="font-size:0.6rem;">Hết hạn</span>';
+        else badge='<span class="badge badge-warn" style="font-size:0.6rem;">Chưa KH</span>';
+        return '<tr><td><span class="key-val">'+fmt(h.key)+'</span></td><td>'+badge+'</td><td style="font-size:0.72rem;">'+fmt(h.created_at_str||'—')+'</td><td style="font-size:0.72rem;">'+fmt(h.han_dung||'—')+'</td></tr>';
+      }).join('');
+      $('histBody').innerHTML=rows||'<tr><td colspan="4" style="text-align:center;color:var(--muted);padding:18px;">Không có dữ liệu</td></tr>';
+    }
+  }).catch(function(e){hideLoad();toast(false,'Lỗi tải thống kê: '+e.message);});
+}
+
+// =============================================
+// FREE KEYS
+// =============================================
+function loadFreeKeys(){
+  showLoad();
+  fetch('/api/list_free_keys',{credentials:'same-origin'})
+  .then(function(r){
+    if(r.status===401){hideLoad();alert('Phiên đăng nhập hết hạn!');location.reload();return null;}
+    return r.json();
+  })
+  .then(function(d){
+    if(!d){return;}
+    hideLoad();
+    // Backend trả về array trực tiếp hoặc object {keys:[...]}
+    var keys=Array.isArray(d)?d:(d.keys||d.data||[]);
+    var _fkArr=keys.map(function(x){return x.key;});
+    var html=keys.map(function(k,i){
+      return '<tr><td><span class="key-val" onclick="copyText(_fkArr['+i+'])" style="cursor:pointer;">'+k.key+'</span></td>'
+        +'<td style="font-size:0.73rem;">'+fmt(k.ip)+'</td>'
+        +'<td style="font-size:0.73rem;">'+fmt(k.created_at||k.time)+'</td>'
+        +'<td style="font-size:0.73rem;">'+fmt(k.expiry_date||k.expiry)+'</td>'
+        +'<td><button class="btn-sm btn-sm-red" onclick="deleteFreeKey(_fkArr['+i+'])"><i class="fa-solid fa-trash"></i></button></td>'
+        +'</tr>';
+    }).join('');
+    $('freeKeyBody').innerHTML=html||'<tr><td colspan="5" style="text-align:center;color:var(--muted);padding:22px;">Không có key free</td></tr>';
+  }).catch(function(e){hideLoad();toast(false,'Lỗi tải dữ liệu: '+e.message);});
+}
+
+function deleteFreeKey(key){
+  if(!confirm('Xóa key '+key+'?'))return;
+  showLoad();
+  fetch('/delete/'+encodeURIComponent(key),{credentials:'same-origin'})
+  .then(function(r){
+    if(r.status===401){hideLoad();alert('Phiên đăng nhập hết hạn!');location.reload();return null;}
+    return r.json();
+  })
+  .then(function(d){if(d){hideLoad();toast(d.status==='success');if(d.status==='success')loadFreeKeys();}})
+  .catch(function(e){hideLoad();toast(false,'Lỗi kết nối');});
+}
+
+// =============================================
+// CHANGE PASSWORD
+// =============================================
+function doChangePass(){
+  var o=$('cp_old').value,n=$('cp_new').value,c=$('cp_confirm').value;
+  if(!n||!c){alert('Vui lòng điền mật khẩu mới và xác nhận');return;}
+  if(n!==c){alert('Mật khẩu mới không khớp');return;}
+  if(n.length<6){alert('Mật khẩu mới phải dài ít nhất 6 ký tự');return;}
+  // Get current admin username from session — send same username or ask admin to enter it
+  var u=prompt('Nhập tài khoản admin mới (mặc định: phedevdzz):','phedevdzz');
+  if(!u)return;
+  showLoad();
+  // Backend /api/change_admin accepts: u=new_user, p=new_pass (verifies via session)
+  var fd=new FormData(); fd.append('u',u); fd.append('p',n);
+  fetch('/api/change_admin',{method:'POST',body:fd,credentials:'same-origin'})
+  .then(function(r){if(r.status===401){hideLoad();alert('Phiên đăng nhập hết hạn! Vui lòng đăng nhập lại.');location.reload();return null;}return r.json();})
+  .then(function(d){
+    if(!d) return;
+    hideLoad(); toast(d.status==='success',d.status==='success'?'Đổi mật khẩu thành công!':'Đổi mật khẩu thất bại');
+    var box=$('cp_result'); box.style.display='block';
+    if(d.status==='success'){
+      box.innerHTML='<div style="background:rgba(34,197,94,0.08);border:1px solid rgba(34,197,94,0.25);border-radius:12px;padding:12px;color:#15803d;font-size:0.84rem;font-weight:700;"><i class="fa-solid fa-check"></i> Đổi mật khẩu thành công!</div>';
+      $('cp_old').value=''; $('cp_new').value=''; $('cp_confirm').value='';
+    } else {
+      box.innerHTML='<div style="background:rgba(239,68,68,0.07);border:1px solid rgba(239,68,68,0.2);border-radius:12px;padding:12px;color:var(--danger);font-size:0.84rem;">'+(d.message||'Lỗi đổi mật khẩu')+'</div>';
+    }
+  }).catch(function(e){hideLoad();toast(false,'Lỗi kết nối: '+e.message);});
+}
+
+// =============================================
+// DEVICE REVIEW
+// =============================================
+function loadDeviceRequests(){
+  showLoad();
+  Promise.all([
+    fetch('/api/list_device_requests',{credentials:'same-origin'}).then(function(r){if(r.status===401){alert('Phiên đăng nhập hết hạn!');location.reload();return [];}return r.json();}),
+    fetch('/api/list_approved_devices',{credentials:'same-origin'}).then(function(r){if(r.status===401){return [];}return r.json();})
+  ]).then(function(results){
+    hideLoad();
+    var pending=results[0]||[];
+    var approved=results[1]||[];
+    renderDevPending(Array.isArray(pending)?pending:(pending.requests||[]));
+    renderDevApproved(Array.isArray(approved)?approved:(approved.devices||[]));
+  }).catch(function(e){hideLoad();toast(false,'Lỗi kết nối: '+e.message);});
+}
+
+var _devPendArr=[];
+function renderDevPending(list){
+  if(!list.length){$('devReqList').innerHTML='<div class="dev-empty"><i class="fa-solid fa-inbox"></i>Chưa có thiết bị chờ duyệt</div>';return;}
+  _devPendArr=list.map(function(r){return {key:r.key,dev:r.device_id};});
+  $('devReqList').innerHTML=list.map(function(r,i){
+    return '<div class="dev-req-card">'
+      +'<div class="dev-req-device"><i class="fa-solid fa-mobile-screen-button" style="color:var(--primary);margin-top:2px;flex-shrink:0;"></i>'+r.device_id+'</div>'
+      +'<div class="dev-req-meta"><span><i class="fa-solid fa-key"></i> '+r.key+'</span><span><i class="fa-solid fa-clock"></i> '+fmt(r.time||r.created_at)+'</span></div>'
+      +'<div class="dev-req-actions">'
+      +'<span class="badge-pending"><i class="fa-solid fa-hourglass"></i> Chờ duyệt</span>'
+      +'<button class="btn-sm btn-sm-green" onclick="approveDevice(_devPendArr['+i+'].key,_devPendArr['+i+'].dev)"><i class="fa-solid fa-check"></i> Duyệt</button>'
+      +'<button class="btn-sm btn-sm-red" onclick="rejectDevice(_devPendArr['+i+'].key,_devPendArr['+i+'].dev)"><i class="fa-solid fa-ban"></i> Từ chối</button>'
+      +'</div></div>';
+  }).join('');
+}
+
+var _devApvArr=[];
+function renderDevApproved(list){
+  if(!list.length){$('devApvList').innerHTML='<div class="dev-empty"><i class="fa-solid fa-check-double"></i>Chưa có thiết bị được duyệt</div>';return;}
+  _devApvArr=list.map(function(r){return {key:r.key,dev:r.device_id};});
+  $('devApvList').innerHTML=list.map(function(r,i){
+    return '<div class="apv-card">'
+      +'<div class="apv-device">'+r.device_id+'</div>'
+      +'<div class="apv-meta"><span><i class="fa-solid fa-key"></i> '+r.key+'</span><span><i class="fa-solid fa-clock"></i> '+fmt(r.approved_at||r.time)+'</span></div>'
+      +'<div class="apv-actions">'
+      +'<span class="badge-approved-dev"><i class="fa-solid fa-check"></i> Đã duyệt</span>'
+      +'<button class="btn-sm btn-sm-red" onclick="revokeDevice(_devApvArr['+i+'].key,_devApvArr['+i+'].dev)"><i class="fa-solid fa-trash"></i> Thu hồi</button>'
+      +'</div></div>';
+  }).join('');
+}
+
+function approveDevice(rid,key,dev){
+  showLoad();
+  // approve with default 1 month duration
+  var fd=new FormData(); fd.append('req_id',rid); fd.append('val','30'); fd.append('unit','ngày');
+  fetch('/api/approve_device_request',{method:'POST',body:fd,credentials:'same-origin'})
+  .then(function(r){if(r.status===401){hideLoad();alert('Phiên đăng nhập hết hạn!');location.reload();return null;}return r.json();})
+  .then(function(d){if(d){hideLoad();toast(d.status==='success');if(d.status==='success')loadDeviceRequests();}})
+  .catch(function(e){hideLoad();toast(false,'Lỗi kết nối');});
+}
+
+function rejectDevice(rid){
+  showLoad();
+  var fd=new FormData(); fd.append('req_id',rid);
+  fetch('/api/reject_device_request',{method:'POST',body:fd,credentials:'same-origin'})
+  .then(function(r){if(r.status===401){hideLoad();alert('Phiên đăng nhập hết hạn!');location.reload();return null;}return r.json();})
+  .then(function(d){if(d){hideLoad();toast(d.status==='success');if(d.status==='success')loadDeviceRequests();}})
+  .catch(function(e){hideLoad();toast(false,'Lỗi kết nối');});
+}
+
+function revokeDevice(deviceId){
+  if(!confirm('Thu hồi quyền thiết bị này?'))return;
+  showLoad();
+  var fd=new FormData(); fd.append('device_id',deviceId);
+  fetch('/api/delete_approved_device',{method:'POST',body:fd,credentials:'same-origin'})
+  .then(function(r){if(r.status===401){hideLoad();alert('Phiên đăng nhập hết hạn!');location.reload();return null;}return r.json();})
+  .then(function(d){if(d){hideLoad();toast(d.status==='success');if(d.status==='success')loadDeviceRequests();}})
+  .catch(function(e){hideLoad();toast(false,'Lỗi kết nối');});
+}
+
+// =============================================
+// CHECK IP (Admin tab)
+// =============================================
+function doCheckIp(){
+  var ip=$('ci_ip').value.trim();
+  if(!ip)return;
+  showLoad();
+  fetch('https://ipapi.co/'+encodeURIComponent(ip)+'/json/')
+  .then(function(r){return r.json();})
+  .then(function(d){
+    hideLoad();
+    var box=$('ci_result'); box.style.display='block';
+    if(!d.error){
+      var html='<div class="check-ip-result" style="display:block;">'
+        +'<div class="result-title"><i class="fa-solid fa-globe"></i> Thông Tin IP: '+ip+'</div>'
+        +'<div class="ip-info-grid">';
+      var fields=[
+        ['Quốc gia',(d.country_name||'—')+' '+( d.country_code||'')],
+        ['Thành phố',d.city||'—'],
+        ['Vùng',d.region||'—'],
+        ['ISP / Tổ chức',d.org||d.asn||'—'],
+        ['Múi giờ',d.timezone||'—'],
+        ['Tọa độ',(d.latitude&&d.longitude)?d.latitude+', '+d.longitude:'—']
+      ];
+      fields.forEach(function(f,i){
+        html+='<div class="ip-info-cell"><div class="ic-label">'+f[0]+'</div><div class="ic-val">'+f[1]+'</div></div>';
+      });
+      box.innerHTML=html+'</div></div>';
+    } else {
+      box.innerHTML='<div style="background:rgba(239,68,68,0.07);border:1px solid rgba(239,68,68,0.2);border-radius:12px;padding:12px;color:var(--danger);font-size:0.84rem;">'+(d.reason||'Lỗi kiểm tra IP')+'</div>';
+    }
+  }).catch(function(){hideLoad();$('ci_result').style.display='block';$('ci_result').innerHTML='<div style="color:var(--danger);padding:10px;">Không thể kiểm tra IP này.</div>';});
+}
+
+// =============================================
+// GETKEY CONFIG
+// =============================================
+function loadGetkeyConfig(){
+  fetch('/admin/get_free_config',{credentials:'same-origin'})
+  .then(function(r){if(r.status===401){return null;}return r.json();})
+  .then(function(d){
+    if(!d)return;
+    // backend returns: val (number), unit (tiếng/ngày), dev (devices)
+    if(d.val)$('gkc_duration').value=d.val;
+    if(d.dev)$('gkc_maxdev').value=d.dev;
+    // unit shown in label
+  }).catch(function(){});
+}
+
+function saveGetkeyConfig(){
+  var dur=$('gkc_duration').value;
+  var maxd=$('gkc_maxdev').value;
+  // backend expects v=val, u=unit, d=devices
+  showLoad();
+  var fd=new FormData();
+  fd.append('v',dur); fd.append('u','tiếng'); fd.append('d',maxd);
+  fetch('/admin/free_setup',{method:'POST',body:fd,credentials:'same-origin'})
+  .then(function(r){if(r.status===401){hideLoad();alert('Phiên đăng nhập hết hạn!');location.reload();return null;}return r.json();})
+  .then(function(d){
+    if(!d){return;}
+    hideLoad(); toast(d.status==='success');
+    var box=$('gkc_result'); box.style.display='block';
+    if(d.status==='success'){
+      box.innerHTML='<div style="background:rgba(34,197,94,0.08);border:1px solid rgba(34,197,94,0.25);border-radius:12px;padding:12px;color:#15803d;font-weight:700;font-size:0.84rem;"><i class="fa-solid fa-check"></i> Lưu cấu hình thành công!</div>';
+    } else {
+      box.innerHTML='<div style="background:rgba(239,68,68,0.07);border:1px solid rgba(239,68,68,0.2);border-radius:12px;padding:12px;color:var(--danger);font-size:0.84rem;">'+(d.message||'Lỗi lưu cấu hình')+'</div>';
+    }
+  }).catch(function(){hideLoad();toast(false);});
+}
+
+// =============================================
+// WEB LOG
+// =============================================
+function loadWebLog(){
+  fetch('/api/web_log',{credentials:'same-origin'})
+  .then(function(r){if(r.status===401){return [];}return r.json();})
+  .then(function(logs){
+    var html=logs.map(function(l){
+      var mClass='log-method-'+(l.method==='POST'?'post':'get');
+      var sClass=l.status>=400?'log-status-err':'log-status-ok';
+      return '<div class="log-entry">'
+        +'<span class="log-time">'+l.time+'</span>'
+        +'<span class="log-method '+mClass+'">'+l.method+'</span>'
+        +'<span class="log-path">'+l.path+'</span>'
+        +'<span class="log-status '+sClass+'">'+l.status+'</span>'
+        +'<span class="log-ip">'+l.ip+'</span>'
+        +'</div>';
+    }).join('');
+    $('webLogList').innerHTML=html||'<div style="text-align:center;padding:24px;color:var(--muted);font-size:0.8rem;">Chưa có log</div>';
+  }).catch(function(e){console.warn('loadWebLog error', e);});
+}
+
+// =============================================
+// API URLS
+// =============================================
+function loadApiUrls(){
+  var base=window.location.origin;
+  var paths={ep_create:'/api/create_key',ep_check:'/api/check_key?key=XXXX',ep_validate:'/api/validate'};
+  Object.keys(paths).forEach(function(id){
+    var el=$(id); if(el)el.textContent=base+paths[id];
+  });
+}
+
+{% endif %}
+
+// =============================================
+// LOAD FREE CONFIG FOR GETKEY PILLS
+// =============================================
+(function loadPublicFreeConfig(){
+  fetch('/api/free_config')
+  .then(function(r){return r.json();})
+  .then(function(d){
+    if(d && d.val){
+      var durEl=$('gkPillDurTxt');
+      var devEl=$('gkPillDevTxt');
+      if(durEl) durEl.textContent=(d.val+' '+d.unit+' sử dụng');
+      if(devEl){
+        var devNum=parseInt(d.dev)||1;
+        devEl.textContent=(devNum>=9999?'Không giới hạn':(devNum+' thiết bị'));
+      }
+    }
+  }).catch(function(){
+    var durEl=$('gkPillDurTxt');
+    if(durEl) durEl.textContent='12 giờ sử dụng';
+    var devEl=$('gkPillDevTxt');
+    if(devEl) devEl.textContent='1 thiết bị';
+  });
+})();
+</script>
+</body>
+</html>

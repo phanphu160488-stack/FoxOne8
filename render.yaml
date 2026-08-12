@@ -1,0 +1,34 @@
+services:
+  - type: web
+    name: vankhanh-server
+    env: python
+    buildCommand: pip install -r requirements.txt
+    startCommand: gunicorn main:app --bind 0.0.0.0:$PORT --workers 1 --threads 4 --worker-class gthread --timeout 120 --keep-alive 5
+    envVars:
+      - key: SECRET_KEY
+        value: server_vkhanh_2026_stable_secret_key_do_not_change
+      # ---- Bot Telegram (tùy chỉnh ở đây hoặc config.py) ----
+      - key: TELEGRAM_BOT_TOKEN
+        value: "8605090305:AAGMxGBN8dHw3Txi4F8K0Z4WsuBD2ETPBFs"
+      - key: TELEGRAM_ADMIN_ID
+        value: "8401914033"
+      # ---- Admin panel (tùy chỉnh) ----
+      - key: ADMIN_USER
+        value: "phedevdzz"
+      - key: ADMIN_PASS
+        value: "x$f%^R4tGF4&nTyD5LW8Avlf"
+      # ---- MySQL (bật MYSQL_ENABLED + điền thông tin kết nối) ----
+      # Trên Render dùng dịch vụ MySQL hoặc MySQL (free). Nếu bỏ trống
+      # MYSQL_HOST, app tự quay lại dùng file JSON.
+      - key: MYSQL_ENABLED
+        value: "true"
+      - key: MYSQL_HOST
+        value: ""
+      - key: MYSQL_PORT
+        value: "3306"
+      - key: MYSQL_USER
+        value: ""
+      - key: MYSQL_PASSWORD
+        value: ""
+      - key: MYSQL_DB
+        value: ""

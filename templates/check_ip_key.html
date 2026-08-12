@@ -1,0 +1,34 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>Kiểm Tra IP — Fox One</title>
+<link rel="icon" href="/img.png">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+<link rel="stylesheet" href="/static/css/check_ip_key.css">
+{% include 'partials/anti_devtools.html' %}
+</head>
+<body>
+<div class="wrap">
+  <div class="logo-row">
+    <div class="logo-ico"><i class="fa-solid fa-globe"></i></div>
+    <div class="logo-text">CHECK IP KEY</div>
+  </div>
+  <div class="card">
+    <div class="card-title">KIỂM TRA THÔNG TIN KEY</div>
+    <div class="radar-wrap">
+      <div class="radar-ring"></div><div class="radar-ring"></div><div class="radar-ring"></div>
+      <div class="radar-center"><i class="fa-solid fa-shield-halved"></i></div>
+    </div>
+    <div class="fg"><label>Key của bạn</label><input type="text" id="cik_key" placeholder="Nhập key cần kiểm tra..."></div>
+    <div class="fg"><label>Device ID (tuỳ chọn)</label><input type="text" id="cik_dev" placeholder="Device ID (nếu có)"></div>
+    <button class="btn-check" onclick="doCheck()"><i class="fa-solid fa-magnifying-glass"></i> KIỂM TRA NGAY</button>
+    <div id="cik_loading" style="display:none;padding:22px 0;"><div class="spinner"></div></div>
+    <div class="result-card" id="cik_result"></div>
+  </div>
+  <a href="/" class="back-btn"><i class="fa-solid fa-arrow-left"></i> Về trang chủ</a>
+</div>
+<script src="/static/js/check_ip_key.js"></script>
+</body>
+</html>

@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>Nhận Key Free — Fox One</title>
+<link rel="icon" href="/img.png">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+<link rel="stylesheet" href="/static/css/free_key.css">
+{% include 'partials/anti_devtools.html' %}
+</head>
+<body>
+<div class="wrap">
+  <div class="logo-row">
+    <div class="logo-ico"><i class="fa-solid fa-fox"></i></div>
+    <div class="logo-text">FOX ONE</div>
+  </div>
+  <div class="card">
+    <div class="card-title"><i class="fa-solid fa-gift" style="-webkit-text-fill-color:initial;color:var(--primary);"></i> NHẬN KEY FREE</div>
+    <div class="scan-wrap">
+      <div class="scan-ring"></div><div class="scan-ring"></div><div class="scan-ring"></div>
+      <div class="scan-center"><i class="fa-solid fa-fox"></i></div>
+    </div>
+    <div class="step-list">
+      <div class="step-item active" id="s1"><div class="step-dot spinning"><i class="fa-solid fa-spinner"></i></div><span class="step-label">Xác minh token bypass</span></div>
+      <div class="step-item" id="s2"><div class="step-dot waiting"><i class="fa-solid fa-clock"></i></div><span class="step-label">Kiểm tra giới hạn IP</span></div>
+      <div class="step-item" id="s3"><div class="step-dot waiting"><i class="fa-solid fa-cog"></i></div><span class="step-label">Tạo key miễn phí</span></div>
+      <div class="step-item" id="s4"><div class="step-dot waiting"><i class="fa-solid fa-paper-plane"></i></div><span class="step-label">Kích hoạt & thông báo</span></div>
+    </div>
+    <div class="prog-track"><div class="prog-fill" id="pf" style="width:0%"></div></div>
+    <div class="prog-pct" id="pp">0%</div>
+    <div class="key-result" id="keyResult">
+      <div class="key-display">
+        <div class="key-label"><i class="fa-solid fa-key"></i> Key của bạn</div>
+        <div class="key-value" id="keyVal">—</div>
+        <button class="copy-btn" onclick="copyKey()"><i class="fa-solid fa-copy"></i> Sao chép key</button>
+      </div>
+      <div class="info-row"><span class="info-label">Thời hạn</span><span class="info-val" id="keyExp" style="color:var(--primary);font-weight:900;">—</span></div>
+      <div class="info-row"><span class="info-label">Thiết bị tối đa</span><span class="info-val" id="keyDev">—</span></div>
+      <div class="info-row"><span class="info-label">Loại key</span><span class="info-val"><span style="background:rgba(249,115,22,0.1);color:var(--primary);padding:3px 10px;border-radius:20px;font-size:0.75rem;font-weight:800;">FREE</span></span></div>
+      <a href="/" class="back-btn"><i class="fa-solid fa-house"></i> Về trang chủ</a>
+    </div>
+    <div class="error-box" id="errBox">
+      <div class="error-icon"><i class="fa-solid fa-circle-xmark"></i></div>
+      <div class="error-msg" id="errMsg">Lỗi xác minh</div>
+      <div class="error-sub" id="errSub">Vui lòng thử lại sau</div>
+      <a href="/" class="back-btn"><i class="fa-solid fa-house"></i> Về trang chủ</a>
+    </div>
+  </div>
+</div>
+<script>var token='{{ token }}';</script>
+<script src="/static/js/free_key.js"></script>
+</body>
+</html>
