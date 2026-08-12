@@ -50,6 +50,23 @@
     <div class="progress-pct" id="ppct">0%</div>
   </div>
 </div>
+<script>
+(function(){
+  var p=0,tgt=0,si=0;
+  var steps=[[25,300],[55,400],[75,380],[90,420],[98,300],[100,150]];
+  function ns(){ if(si>=steps.length)return; tgt=steps[si][0]; setTimeout(ns,steps[si][1]); si++; }
+  ns();
+  function tick(){
+    if(p<tgt){p=Math.min(tgt,p+1.8);}
+    var d=Math.min(100,Math.floor(p));
+    document.getElementById('pfill').style.width=d+'%';
+    document.getElementById('ppct').innerText=d+'%';
+    if(d<100){requestAnimationFrame(tick);}
+    else{setTimeout(function(){document.getElementById('startupLoading').style.display='none';},400);}
+  }
+  requestAnimationFrame(tick);
+})();
+</script>
 <script>window.IS_ADMIN = {% if session.get('is_admin') %}true{% else %}false{% endif %};</script>
 <script src="/static/js/app.js"></script>
 
