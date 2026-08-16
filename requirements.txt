@@ -2,4 +2,3 @@ flask
 flask-session
 requests
 gunicorn
-pymysql

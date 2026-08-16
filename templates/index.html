@@ -77,6 +77,7 @@
 </div>
 
 <!-- LOGIN OVERLAY -->
+<!-- LOGIN OVERLAY -->
 <div class="login-overlay" id="loginOverlay">
   <div class="login-card" style="position:relative;">
     <button class="login-close" onclick="closeLogin()" style="position:absolute;top:14px;right:14px;"><i class="fa-solid fa-xmark"></i></button>
@@ -99,49 +100,183 @@
   </div>
 </div>
 
-
-<!-- ADMIN HEADER -->
-<div class="admin-header" id="adminTopBar">
-  <div class="admin-avatar-wrap">
-    <div class="admin-avatar-ring2"></div>
-    <div class="admin-avatar-ring"></div>
-    <img src="/img.png" alt="avatar" class="admin-avatar-img">
+<!-- TOP FLOATING NAVBAR -->
+<header class="top-nav-bar" id="topNavBar">
+  <div class="top-nav-left">
+    <div class="hamburger" id="hbg" onclick="toggleMenu()" role="button" aria-label="Toggle navigation menu" tabindex="0">
+      <div class="hbg-box">
+        <span></span><span></span><span></span>
+      </div>
+      <span class="hbg-text">MENU</span>
+    </div>
+    <div class="brand-badge" onclick="sw('trangchu')">
+      <div class="brand-logo"><i class="fa-solid fa-briefcase"></i></div>
+      <div class="brand-info">
+        <span class="brand-name">FOX ONE</span>
+        <span class="brand-tag"><span class="pulse-dot"></span> ENTERPRISE</span>
+      </div>
+    </div>
   </div>
-  <div class="admin-header-info">
-    <div class="admin-header-name">FOX ONE</div>
-    <div class="admin-header-tag"><div class="admin-header-dot"></div> Admin Panel</div>
+
+  <div class="top-nav-center">
+    <div class="nav-title-pill" id="topNavTitle">
+      <i class="fa-solid fa-chart-line"></i> DASHBOARD TỔNG QUAN
+    </div>
   </div>
-</div>
 
-<!-- HAMBURGER -->
-<div class="hamburger" id="hbg" onclick="toggleMenu()"><span></span><span></span><span></span></div>
+  <div class="top-nav-right">
+    {% if session.get('is_admin') %}
+    <div class="user-badge admin-badge" onclick="sw('trangchu')" title="Enterprise Portal Active">
+      <i class="fa-solid fa-user-gear"></i> <span class="ub-text">ENTERPRISE</span>
+    </div>
+    <a href="/logout" class="quick-nav-btn logout-quick-btn" title="Đăng xuất Portal">
+      <i class="fa-solid fa-power-off"></i>
+    </a>
+    {% else %}
+    <button class="quick-nav-btn login-quick-btn" onclick="showLogin()" title="Portal Admin Doanh Nghiệp">
+      <i class="fa-solid fa-lock"></i> <span class="login-btn-txt">PORTAL LOGIN</span>
+    </button>
+    {% endif %}
+  </div>
+</header>
 
-<!-- NAV DROPDOWN -->
-<div class="nav-dropdown" id="navDrop">
-  {% if session.get('is_admin') %}
-  <button class="nav-item active" onclick="sw('trangchu')"><i class="fa-solid fa-house"></i> Trang Chủ</button>
-  <button class="nav-item" onclick="sw('taokhoa')"><i class="fa-solid fa-plus-circle"></i> Tạo Khóa Mới</button>
-  <button class="nav-item" onclick="sw('database')"><i class="fa-solid fa-database"></i> Quản Lý Keys</button>
-  <button class="nav-item" onclick="sw('checkkey')"><i class="fa-solid fa-shield-halved"></i> Kiểm Tra Key</button>
-  <button class="nav-item" onclick="sw('keyfree')"><i class="fa-solid fa-gift"></i> Key Free</button>
-  <button class="nav-item" onclick="sw('keystats')"><i class="fa-solid fa-chart-bar"></i> Thống Kê Key</button>
-  <button class="nav-item" onclick="sw('getkeyconfig')"><i class="fa-solid fa-sliders"></i> GetKey Config</button>
-  <button class="nav-item" onclick="sw('weblog')"><i class="fa-solid fa-terminal"></i> Web Log</button>
-  <button class="nav-item" onclick="sw('quyenriengtu')"><i class="fa-solid fa-lock"></i> Bảo Mật</button>
-  <button class="nav-item" onclick="sw('devicereview')"><i class="fa-solid fa-mobile-screen-button"></i> Duyệt Thiết Bị</button>
-  <button class="nav-item" onclick="sw('checkip')"><i class="fa-solid fa-globe"></i> Check IP</button>
-  <button class="nav-item" onclick="sw('settings')"><i class="fa-solid fa-gear"></i> API Docs</button>
-  <div class="nav-divider"></div>
-  <a href="/logout" class="nav-item nav-item-logout" style="text-decoration:none;"><i class="fa-solid fa-arrow-right-from-bracket"></i> Đăng Xuất</a>
-  {% else %}
-  <button class="nav-item active" onclick="sw('trangchu');closeNav()"><i class="fa-solid fa-house"></i> Trang Chủ</button>
-  <button class="nav-item" onclick="sw('trangchu');setTimeout(function(){document.getElementById('sc-section').scrollIntoView({behavior:'smooth'})},200);closeNav()"><i class="fa-brands fa-soundcloud"></i> Tìm Nhạc</button>
-  <button class="nav-item" onclick="sw('trangchu');setTimeout(function(){document.getElementById('getkey-section').scrollIntoView({behavior:'smooth'})},200);closeNav()"><i class="fa-solid fa-key"></i> Lấy Key</button>
-  <button class="nav-item" onclick="sw('checkkey');closeNav()"><i class="fa-solid fa-search"></i> Tra Cứu Key</button>
-  <div class="nav-divider"></div>
-  <button class="nav-item" onclick="showLogin();closeNav()"><i class="fa-solid fa-user-shield"></i> Admin Login</button>
-  {% endif %}
-</div>
+<!-- NAV BACKDROP -->
+<div class="nav-backdrop" id="navBackdrop" onclick="closeNav()"></div>
+
+<!-- NAV SIDEBAR DRAWER (ENTERPRISE SAAS BUSINESS STYLE) -->
+<nav class="nav-dropdown" id="navDrop" aria-label="Menu quản trị doanh nghiệp">
+  <div class="nav-glow-bg"></div>
+
+  <div class="nav-head">
+    <div class="nav-head-avatar">
+      <span class="nav-head-ring2"></span>
+      <span class="nav-head-ring"></span>
+      <img src="/img.png" alt="avatar" class="nav-head-img">
+    </div>
+    <div class="nav-head-info">
+      <div class="nav-head-title">FOX ONE SaaS</div>
+      <div class="nav-head-sub">
+        {% if session.get('is_admin') %}
+          <span class="status-pill status-admin"><i class="fa-solid fa-shield-halved"></i> BUSINESS CONSOLE</span>
+        {% else %}
+          <span class="status-pill status-user"><span class="pulse-dot"></span> SLA 99.9% ONLINE</span>
+        {% endif %}
+      </div>
+    </div>
+    <button class="nav-close" onclick="closeNav()" aria-label="Đóng menu"><i class="fa-solid fa-xmark"></i></button>
+  </div>
+
+  <div class="nav-wrap">
+    {% if session.get('is_admin') %}
+    <!-- CATEGORY 1: TỔNG QUAN & DỊCH VỤ -->
+    <div class="nav-label" style="--i:0"><i class="fa-solid fa-chart-pie"></i> Tổng Quan & Báo Cáo</div>
+    <button class="nav-item active" data-tab="trangchu" style="--i:1" onclick="sw('trangchu')">
+      <i class="fa-solid fa-chart-line"></i>
+      <span class="nav-text">Dashboard Tổng Quan</span>
+    </button>
+    <button class="nav-item" data-tab="keystats" style="--i:2" onclick="sw('keystats')">
+      <i class="fa-solid fa-chart-column"></i>
+      <span class="nav-text">Báo Cáo Doanh Số & Key</span>
+      <span class="nav-badge badge-analytics">ANALYTICS</span>
+    </button>
+
+    <!-- CATEGORY 2: QUẢN LÝ DỊCH VỤ & THƯƠNG MẠI -->
+    <div class="nav-label" style="--i:3"><i class="fa-solid fa-briefcase"></i> Quản Lý Dịch Vụ & Key</div>
+    <button class="nav-item" data-tab="taokhoa" style="--i:4" onclick="sw('taokhoa')">
+      <i class="fa-solid fa-key"></i>
+      <span class="nav-text">Khởi Tạo Gói Key</span>
+      <span class="nav-badge badge-pro">PRO</span>
+    </button>
+    <button class="nav-item" data-tab="database" style="--i:5" onclick="sw('database')">
+      <i class="fa-solid fa-folder-tree"></i>
+      <span class="nav-text">Cơ Sở Dữ Liệu Key</span>
+    </button>
+    <button class="nav-item" data-tab="checkkey" style="--i:6" onclick="sw('checkkey')">
+      <i class="fa-solid fa-magnifying-glass-dollar"></i>
+      <span class="nav-text">Tra Cứu & Kiểm Định</span>
+    </button>
+    <button class="nav-item" data-tab="keyfree" style="--i:7" onclick="sw('keyfree')">
+      <i class="fa-solid fa-gift"></i>
+      <span class="nav-text">Quản Lý Key Ưu Đãi</span>
+      <span class="nav-badge badge-offer">OFFER</span>
+    </button>
+
+    <!-- CATEGORY 3: TỰ ĐỘNG HÓA & CẤU HÌNH -->
+    <div class="nav-label" style="--i:8"><i class="fa-solid fa-gears"></i> Cấu Hình Auto & Thiết Bị</div>
+    <button class="nav-item" data-tab="getkeyconfig" style="--i:9" onclick="sw('getkeyconfig')">
+      <i class="fa-solid fa-sliders"></i>
+      <span class="nav-text">Cấu Hình Auto GetKey</span>
+      <span class="nav-badge badge-auto">AUTO</span>
+    </button>
+    <button class="nav-item" data-tab="devicereview" style="--i:10" onclick="sw('devicereview')">
+      <i class="fa-solid fa-laptop-medical"></i>
+      <span class="nav-text">Duyệt Thiết Bị Đăng Ký</span>
+    </button>
+
+    <!-- CATEGORY 4: BẢO MẬT & KIỂM TOÁN -->
+    <div class="nav-label" style="--i:11"><i class="fa-solid fa-shield-check"></i> An Ninh & Kiểm Toán Logs</div>
+    <button class="nav-item" data-tab="weblog" style="--i:12" onclick="sw('weblog')">
+      <i class="fa-solid fa-clock-rotate-left"></i>
+      <span class="nav-text">Nhật Ký Kiểm Toán Log</span>
+      <span class="nav-badge badge-audit">AUDIT</span>
+    </button>
+    <button class="nav-item" data-tab="quyenriengtu" style="--i:13" onclick="sw('quyenriengtu')">
+      <i class="fa-solid fa-user-lock"></i>
+      <span class="nav-text">Bảo Mật & Đổi Mật Khẩu</span>
+    </button>
+    <button class="nav-item" data-tab="checkip" style="--i:14" onclick="sw('checkip')">
+      <i class="fa-solid fa-network-wired"></i>
+      <span class="nav-text">Tra Cứu IP & An Ninh Network</span>
+    </button>
+    <button class="nav-item" data-tab="settings" style="--i:15" onclick="sw('settings')">
+      <i class="fa-solid fa-code"></i>
+      <span class="nav-text">API Business & Portal Docs</span>
+    </button>
+
+    <div class="nav-divider"></div>
+    <a href="/logout" class="nav-item nav-item-logout" style="--i:16">
+      <i class="fa-solid fa-arrow-right-from-bracket"></i>
+      <span class="nav-text">Đăng Xuất Business Console</span>
+    </a>
+    {% else %}
+    <!-- PUBLIC BUSINESS USER MENU -->
+    <div class="nav-label" style="--i:0"><i class="fa-solid fa-compass"></i> Menu Dịch Vụ</div>
+    <button class="nav-item active" data-tab="trangchu" style="--i:1" onclick="sw('trangchu');closeNav()">
+      <i class="fa-solid fa-building"></i>
+      <span class="nav-text">Trang Chủ Platform</span>
+    </button>
+    <button class="nav-item" style="--i:2" onclick="sw('trangchu');setTimeout(function(){document.getElementById('sc-section').scrollIntoView({behavior:'smooth'})},200);closeNav()">
+      <i class="fa-brands fa-soundcloud"></i>
+      <span class="nav-text">Dịch Vụ SoundCloud</span>
+      <span class="nav-badge badge-pro">PRO</span>
+    </button>
+    <button class="nav-item" style="--i:3" onclick="sw('trangchu');setTimeout(function(){document.getElementById('getkey-section').scrollIntoView({behavior:'smooth'})},200);closeNav()">
+      <i class="fa-solid fa-key"></i>
+      <span class="nav-text">Đăng Ký & Lấy Key Dịch Vụ</span>
+      <span class="nav-badge badge-offer">FREE</span>
+    </button>
+    <button class="nav-item" data-tab="checkkey" style="--i:4" onclick="sw('checkkey');closeNav()">
+      <i class="fa-solid fa-magnifying-glass"></i>
+      <span class="nav-text">Tra Cứu Trạng Thái Key</span>
+    </button>
+    <div class="nav-divider"></div>
+    <button class="nav-item nav-item-login" style="--i:5" onclick="showLogin();closeNav()">
+      <i class="fa-solid fa-user-lock"></i>
+      <span class="nav-text">Business Admin Portal</span>
+    </button>
+    {% endif %}
+
+    <div class="nav-foot">
+      <div class="nav-foot-info">
+        <span class="nav-foot-brand">FOX ONE ENTERPRISE</span>
+        <span class="nav-foot-ver">SaaS Platform &middot; SLA 99.9%</span>
+      </div>
+      <div class="nav-foot-ping">
+        <span class="ping-pill"><i class="fa-solid fa-circle-check"></i> SLA OK</span>
+      </div>
+    </div>
+  </div>
+</nav>
 
 <!-- MAIN PANEL -->
 <div class="panel">
@@ -150,21 +285,21 @@
 <!-- ========== TAB: TRANGCHU (User homepage) ========== -->
 <div class="tab active" id="tab-trangchu">
 
-  <!-- HERO -->
+  <!-- HERO (BUSINESS ENTERPRISE) -->
   <div style="text-align:center;padding:26px 0 12px;position:relative;">
-    <div style="display:inline-flex;align-items:center;justify-content:center;width:76px;height:76px;background:var(--grad);border-radius:24px;font-size:2rem;color:#fff;box-shadow:0 12px 38px rgba(249,115,22,0.45);margin-bottom:16px;position:relative;">
-      <i class="fa-solid fa-fox"></i>
-      <div style="position:absolute;top:-7px;right:-7px;width:22px;height:22px;background:#fff;border-radius:50%;display:flex;align-items:center;justify-content:center;box-shadow:0 2px 10px rgba(0,0,0,0.18);">
-        <i class="fa-solid fa-key" style="font-size:0.62rem;color:var(--primary);"></i>
+    <div style="display:inline-flex;align-items:center;justify-content:center;width:76px;height:76px;background:var(--grad);border-radius:24px;font-size:2.2rem;color:#fff;box-shadow:0 12px 38px rgba(37,99,235,0.45);margin-bottom:16px;position:relative;">
+      <i class="fa-solid fa-briefcase"></i>
+      <div style="position:absolute;top:-7px;right:-7px;width:24px;height:24px;background:#1e293b;border:1px solid var(--primary);border-radius:50%;display:flex;align-items:center;justify-content:center;box-shadow:0 2px 10px rgba(0,0,0,0.5);">
+        <i class="fa-solid fa-shield-halved" style="font-size:0.65rem;color:var(--primary);"></i>
       </div>
     </div>
-    <div style="font-family:'Orbitron',sans-serif;font-size:1.7rem;font-weight:900;background:var(--grad);-webkit-background-clip:text;-webkit-text-fill-color:transparent;letter-spacing:4px;margin-bottom:4px;text-shadow:0 2px 18px rgba(249,115,22,0.35);">FOX ONE</div>
-    <div style="font-family:'Orbitron',sans-serif;font-size:0.85rem;font-weight:800;color:var(--text2);letter-spacing:5px;margin-bottom:4px;">COMMUNITY SERVER</div>
-    <div style="font-size:0.8rem;color:var(--text2);font-weight:600;"> Hệ thống key nhanh, bảo mật, ổn định </div>
+    <div style="font-family:'Outfit',sans-serif;font-size:1.7rem;font-weight:900;background:var(--grad);-webkit-background-clip:text;-webkit-text-fill-color:transparent;letter-spacing:3px;margin-bottom:4px;text-shadow:0 2px 18px rgba(37,99,235,0.35);">FOX ONE SaaS</div>
+    <div style="font-family:'Outfit',sans-serif;font-size:0.85rem;font-weight:800;color:var(--text2);letter-spacing:4px;margin-bottom:4px;text-transform:uppercase;">ENTERPRISE PLATFORM</div>
+    <div style="font-size:0.82rem;color:var(--text2);font-weight:600;"> Nền tảng quản trị dịch vụ key & phân phối bản quyền tự động </div>
     <div style="display:flex;justify-content:center;gap:8px;margin-top:14px;flex-wrap:wrap;">
-      <span class="hero-pill"><i class="fa-solid fa-circle" style="color:#22c55e;font-size:0.5rem;animation:dotPulse 1.4s ease infinite;"></i> Hệ thống Online</span>
-      <span class="hero-pill"><i class="fa-solid fa-shield-halved"></i> Bảo mật cao</span>
-      <span class="hero-pill"><i class="fa-solid fa-bolt"></i> Phản hồi nhanh</span>
+      <span class="hero-pill"><i class="fa-solid fa-circle" style="color:#10b981;font-size:0.5rem;animation:dotPulse 1.4s ease infinite;"></i> SLA Uptime 99.9%</span>
+      <span class="hero-pill"><i class="fa-solid fa-user-shield"></i> Phân Quyền Doanh Nghiệp</span>
+      <span class="hero-pill"><i class="fa-solid fa-bolt"></i> Tốc Độ Phản Hồi Realtime</span>
     </div>
   </div>
 
@@ -670,12 +805,16 @@ function closeLogin(){$('loginOverlay').classList.remove('show');}
 
 function closeNav(){
   $('navDrop').classList.remove('show');
+  $('navBackdrop').classList.remove('show');
   $('hbg').classList.remove('open');
+  document.body.style.overflow='';
 }
 
 function toggleMenu(){
   $('hbg').classList.toggle('open');
-  $('navDrop').classList.toggle('show');
+  var open=$('navDrop').classList.toggle('show');
+  $('navBackdrop').classList.toggle('show', !!open);
+  document.body.style.overflow=open?'hidden':'';
 }
 
 // Close nav when clicking outside
@@ -687,6 +826,21 @@ document.addEventListener('click', function(e){
 });
 
 // Tab switching
+var TAB_NAMES = {
+  'trangchu': '<i class="fa-solid fa-chart-line"></i> DASHBOARD TỔNG QUAN',
+  'taokhoa': '<i class="fa-solid fa-key"></i> KHỞI TẠO GÓI KEY',
+  'database': '<i class="fa-solid fa-folder-tree"></i> CƠ SỞ DỮ LIỆU KEY',
+  'checkkey': '<i class="fa-solid fa-magnifying-glass-dollar"></i> TRA CỨU & THẨM ĐỊNH',
+  'keyfree': '<i class="fa-solid fa-gift"></i> QUẢN LÝ KEY ƯU ĐÃI',
+  'keystats': '<i class="fa-solid fa-chart-column"></i> BÁO CÁO DOANH SỐ',
+  'getkeyconfig': '<i class="fa-solid fa-sliders"></i> CẤU HÌNH AUTO GETKEY',
+  'weblog': '<i class="fa-solid fa-clock-rotate-left"></i> NHẬT KÝ KIỂM TOÁN',
+  'quyenriengtu': '<i class="fa-solid fa-user-lock"></i> BẢO MẬT & PHÂN QUYỀN',
+  'devicereview': '<i class="fa-solid fa-laptop-medical"></i> DUYỆT THIẾT BỊ DOANH NGHIỆP',
+  'checkip': '<i class="fa-solid fa-network-wired"></i> AN NINH IP NETWORK',
+  'settings': '<i class="fa-solid fa-code"></i> API BUSINESS & PORTAL'
+};
+
 var curTab='trangchu';
 function sw(name, closeMenu){
   if(curTab===name && !closeMenu)return;
@@ -696,11 +850,23 @@ function sw(name, closeMenu){
   if(old){old.classList.remove('active');}
   nw.classList.add('active');
   curTab=name;
+
+  // Update top nav title
+  var titleEl = $('topNavTitle');
+  if(titleEl && TAB_NAMES[name]){
+    titleEl.innerHTML = TAB_NAMES[name];
+  }
+
   // Update nav active state
   document.querySelectorAll('.nav-item').forEach(function(el){
-    el.classList.remove('active');
+    if(el.getAttribute('data-tab') === name){
+      el.classList.add('active');
+    } else {
+      el.classList.remove('active');
+    }
   });
   closeNav();
+
   // Load data for tab
   if(name==='database')loadDatabase();
   if(name==='weblog')loadWebLog();

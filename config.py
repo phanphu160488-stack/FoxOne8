@@ -26,25 +26,12 @@ SESSION_LIFETIME_DAYS = int(os.environ.get('SESSION_LIFETIME_DAYS', '365'))
 BASE_DIR = os.path.dirname(os.path.abspath(__file__))
 # Dùng Render persistent disk nếu có (/data), nếu không fallback về thư mục script
 DATA_DIR = '/data' if os.path.isdir('/data') else BASE_DIR
+# File JSON hiển thị/đồng bộ (mirror) — để admin tiện xem/lưu key
 DB_FILE = os.path.join(DATA_DIR, "database_keys.json")
+# Database chính — SQLite
+SQLITE_DB = os.environ.get('SQLITE_DB', os.path.join(DATA_DIR, "server.db"))
 
 os.makedirs(DATA_DIR, exist_ok=True)
-
-# ============================================================
-# MYSQL — database chính (bật MYSQL_ENABLED + điền host để dùng MySQL)
-# Nếu không cấu hình MySQL (hoặc driver chưa cài), hệ thống tự động
-# quay lại dùng file JSON (database_keys.json) để không bị lỗi khi chạy.
-# ============================================================
-MYSQL_ENABLED = os.environ.get('MYSQL_ENABLED', 'false').strip().lower() in ('1', 'true', 'yes', 'on')
-MYSQL_HOST = os.environ.get('MYSQL_HOST', '').strip()
-MYSQL_PORT = int(os.environ.get('MYSQL_PORT', '3306'))
-MYSQL_USER = os.environ.get('MYSQL_USER', '').strip()
-MYSQL_PASSWORD = os.environ.get('MYSQL_PASSWORD', '').strip()
-MYSQL_DB = os.environ.get('MYSQL_DB', '').strip()
-MYSQL_CHARSET = os.environ.get('MYSQL_CHARSET', 'utf8mb4')
-# Bảng dữ liệu (tự tạo nếu chưa tồn tại)
-MYSQL_TABLE_KEYS = os.environ.get('MYSQL_TABLE_KEYS', 'server_keys')
-MYSQL_TABLE_META = os.environ.get('MYSQL_TABLE_META', 'server_meta')
 
 # ============================================================
 # ADMIN PANEL — tài khoản/mật khẩu MẶC ĐỊNH (fallback khi chưa có DB)

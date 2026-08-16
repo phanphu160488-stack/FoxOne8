@@ -3,7 +3,7 @@ services:
     name: vankhanh-server
     env: python
     buildCommand: pip install -r requirements.txt
-    startCommand: gunicorn main:app --bind 0.0.0.0:$PORT --workers 1 --threads 4 --worker-class gthread --timeout 120 --keep-alive 5
+    startCommand: gunicorn server:app --bind 0.0.0.0:$PORT --workers 1 --threads 4 --worker-class gthread --timeout 120 --keep-alive 5
     envVars:
       - key: SECRET_KEY
         value: server_vkhanh_2026_stable_secret_key_do_not_change
@@ -17,18 +17,12 @@ services:
         value: "phedevdzz"
       - key: ADMIN_PASS
         value: "x$f%^R4tGF4&nTyD5LW8Avlf"
-      # ---- MySQL (bật MYSQL_ENABLED + điền thông tin kết nối) ----
-      # Trên Render dùng dịch vụ MySQL hoặc MySQL (free). Nếu bỏ trống
-      # MYSQL_HOST, app tự quay lại dùng file JSON.
-      - key: MYSQL_ENABLED
-        value: "true"
-      - key: MYSQL_HOST
-        value: ""
-      - key: MYSQL_PORT
-        value: "3306"
-      - key: MYSQL_USER
-        value: ""
-      - key: MYSQL_PASSWORD
-        value: ""
-      - key: MYSQL_DB
-        value: ""
+      # ---- SQLite: dữ liệu lưu trong file server.db ----
+      # Nếu muốn dữ liệu tồn tại sau mỗi lần deploy, gắn persistent disk
+      # (mount vào /data) — app tự động dùng /data khi thư mục tồn tại.
+      - key: SQLITE_DB
+        value: "/data/server.db"
+    disk:
+      name: sqlite-data
+      mountPath: /data
+      sizeGB: 1

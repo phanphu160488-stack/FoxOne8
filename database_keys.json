@@ -1,38 +1,44 @@
 {
-  "___ADMIN_CONFIG___": {
-    "user": "phedevdzz",
-    "pass": "x$f%^R4tGF4&nTyD5LW8Avlf"
-  },
-  "___OWNER_IPS___": [
-    "127.0.0.1"
-  ],
-  "KEY-S5IY-T5BR-94IO": {
-    "duration_val": 1,
-    "duration_unit": "ngày",
-    "max_devices": 1,
-    "status": "Chưa kích hoạt",
-    "activated_time": null,
-    "created_at": 1783129458.1932957,
-    "used_devices": {},
-    "creator_info": "Admin Panel | premium"
-  },
-  "1DAY-HRJ-XDZ": {
-    "duration_val": 1,
-    "duration_unit": "ngày",
-    "max_devices": 1,
-    "status": "Chưa kích hoạt",
-    "activated_time": null,
-    "created_at": 1783129458.240657,
-    "used_devices": {}
-  },
-  "KEY-R24K-S4GU-TNTX": {
-    "duration_val": 1,
-    "duration_unit": "ngày",
-    "max_devices": 1,
-    "status": "Chưa kích hoạt",
-    "activated_time": null,
-    "created_at": 1783129910.1445637,
-    "used_devices": {},
-    "creator_info": "Admin Panel | premium"
-  }
+    "VIP-I2VB-S6DD-V7LC": {
+        "duration_val": 1,
+        "duration_unit": "ngày",
+        "max_devices": 1,
+        "status": "Hết hạn",
+        "activated_time": 1786322713.3210323,
+        "created_at": 1786322713.2937016,
+        "used_devices": {},
+        "creator_info": "Admin Panel | vip"
+    },
+    "VIP-P88P-UTO4-06IG": {
+        "duration_val": 1,
+        "duration_unit": "tiếng",
+        "max_devices": 1,
+        "status": "Hết hạn",
+        "activated_time": 1786322745.604053,
+        "created_at": 1786322745.5785778,
+        "used_devices": {
+            "DEV_B": 1786326345.604053
+        },
+        "creator_info": "Admin Panel | vip"
+    },
+    "VIP-11I8-J899-SXP9": {
+        "duration_val": 2,
+        "duration_unit": "tiếng",
+        "max_devices": 1,
+        "status": "Hết hạn",
+        "activated_time": 1786322745.6862361,
+        "created_at": 1786322745.6708984,
+        "used_devices": {},
+        "creator_info": "Admin Panel | vip"
+    },
+    "___ADMIN_CONFIG___": {
+        "user": "phedevdzz",
+        "pass": "x$f%^R4tGF4&nTyD5LW8Avlf"
+    },
+    "___OWNER_IPS___": [
+        "127.0.0.1"
+    ],
+    "___IP_KEY_MAP___": {
+        "127.0.0.1": "FREE-M1S96"
+    }
 }

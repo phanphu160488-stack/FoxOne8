@@ -13,7 +13,7 @@ import threading
 import time
 from datetime import datetime
 
-from config import TELEGRAM_BOT_TOKEN, TELEGRAM_ADMIN_ID, TELEGRAM_NOTIFY_CHAT_ID, DB_FILE, VN_TZ
+from config import TELEGRAM_BOT_TOKEN, TELEGRAM_ADMIN_ID, TELEGRAM_NOTIFY_CHAT_ID, SQLITE_DB, VN_TZ
 from database import load_db, save_db
 from utils import _TG_OK, _req_tg, format_ts, get_time_left_str, shorten_with_link4m, _RATE_LIMITER, _RATE_LOCK
 
@@ -137,7 +137,7 @@ def _tg_handle_cmd(chat_id, text):
 
     elif cmd == '/status':
         try:
-            db_size = os.path.getsize(DB_FILE) / 1024 if os.path.exists(DB_FILE) else 0
+            db_size = os.path.getsize(SQLITE_DB) / 1024 if os.path.exists(SQLITE_DB) else 0
             host = os.environ.get('RENDER_EXTERNAL_URL', 'localhost')
             with _RATE_LOCK:
                 rl_count = len(_RATE_LIMITER)

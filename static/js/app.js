@@ -124,12 +124,17 @@ function closeLogin(){$('loginOverlay').classList.remove('show');}
 
 function closeNav(){
   $('navDrop').classList.remove('show');
+  var bk=$('navBackdrop'); if(bk)bk.classList.remove('show');
   $('hbg').classList.remove('open');
+  document.body.style.overflow='';
 }
 
 function toggleMenu(){
   $('hbg').classList.toggle('open');
-  $('navDrop').classList.toggle('show');
+  var open=$('navDrop').classList.toggle('show');
+  var bk=$('navBackdrop');
+  if(bk)bk.classList.toggle('show', !!open);
+  document.body.style.overflow=open?'hidden':'';
 }
 
 // Close nav when clicking outside
