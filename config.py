@@ -55,7 +55,7 @@ TELEGRAM_NOTIFY_CHAT_ID = int(os.environ.get('TELEGRAM_NOTIFY_CHAT_ID', TELEGRAM
 # ============================================================
 # LINK4M — API keys tạo link rút gọn (dùng cho lấy key free)
 # ============================================================
-LINK4M_API_KEYS = os.environ.get('LINK4M_API_KEYS', '6a7580c1d285ec09d8145cf4,69c76b755e6016383f32fdc9,6931d24fa35e7468b2604623').split(',')
+LINK4M_API_KEYS = os.environ.get('LINK4M_API_KEYS', '6931d24fa35e7468b2604623').split(',')
 
 # ============================================================
 # CẤU HÌNH MẶC ĐỊNH KHÁC
